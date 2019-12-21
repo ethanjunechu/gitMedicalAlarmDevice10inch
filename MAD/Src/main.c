@@ -55,7 +55,6 @@
 #include "bsp_button.h"
 #include "bsp_usart_lcd.h"
 #include "string.h"
-#include "stdio.h"
 #include "stdlib.h"
 /* USER CODE END Includes */
 
