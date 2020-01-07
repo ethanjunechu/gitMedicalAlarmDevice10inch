@@ -89,7 +89,8 @@ extern char date_1302[];
 uint8_t Ver[23] = { 0xEE, 0xB1, 0x10, 0x00, 0x03, 0x00, 0x63, 0x56, 0x65, 0x72,
 		0x2E, 0x32, 0x30, 0x31, 0x39, 0x31, 0x31, 0x31, 0x39, 0xFF, 0xFC, 0xFF,
 		0xFF };
-
+/* LED片选 */
+long LED_Select = 0;
 /* RS485-RS232 参数 */
 extern uint8_t RS485_RX_BUF[8];
 unsigned char rom485[256];
@@ -514,17 +515,17 @@ void application(void) {
 	/* 开机开关报警继电器 - 开 */
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
 	/* 开机指示灯 */
-//	LED0A(1);
-//	LED0B(1);
-//	LED0C(1);
-//	/* LED1 */
-//	LED1A(1);
-//	LED1B(1);
-//	LED1C(1);
-//	/* LED2 */
-//	LED2A(1);
-//	LED2B(1);
-//	LED2C(1);
+	LED1(0);
+	LED2(0);
+	LED3(0);
+	LED4(0);
+	LED5(0);
+	LED6(0);
+	LED7(0);
+	E3(0);
+	A0(0);
+	A1(0);
+	A2(0);
 	/* 开机开关报警继电器 - 关 */
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
 	/* 读取 FLASH 储存的设置 */
@@ -826,6 +827,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN11;
 		tempColor[4] = PAGE_MAIN11;
 		mainpage = PAGE_MAIN11;
+		/* 片选LED */
+		LED_Select = 11;
 	}
 	//跳转主画面1-2
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -834,6 +837,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN12;
 		tempColor[4] = PAGE_MAIN12;
 		mainpage = PAGE_MAIN12;
+		/* 片选LED */
+		LED_Select = 12;
 	}
 	//跳转主画面1-3
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -842,6 +847,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN13;
 		tempColor[4] = PAGE_MAIN13;
 		mainpage = PAGE_MAIN13;
+		/* 片选LED */
+		LED_Select = 13;
 	}
 	//跳转主画面1-4
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -850,6 +857,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN14;
 		tempColor[4] = PAGE_MAIN14;
 		mainpage = PAGE_MAIN14;
+		/* 片选LED */
+		LED_Select = 14;
 	}
 	//跳转主画面1-5
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -858,6 +867,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN15;
 		tempColor[4] = PAGE_MAIN15;
 		mainpage = PAGE_MAIN15;
+		/* 片选LED */
+		LED_Select = 15;
 	}
 	//跳转主画面1-6
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -866,6 +877,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN16;
 		tempColor[4] = PAGE_MAIN16;
 		mainpage = PAGE_MAIN16;
+		/* 片选LED */
+		LED_Select = 16;
 	}
 	//跳转主画面2-12
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -874,6 +887,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN212;
 		tempColor[4] = PAGE_MAIN212;
 		mainpage = PAGE_MAIN212;
+		/* 片选LED */
+		LED_Select = 212;
 	}
 	//跳转主画面2-13
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -882,6 +897,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN213;
 		tempColor[4] = PAGE_MAIN213;
 		mainpage = PAGE_MAIN213;
+		/* 片选LED */
+		LED_Select = 213;
 	}
 	//跳转主画面2-14
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -890,6 +907,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN214;
 		tempColor[4] = PAGE_MAIN214;
 		mainpage = PAGE_MAIN214;
+		/* 片选LED */
+		LED_Select = 214;
 	}
 	//跳转主画面2-15
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -898,6 +917,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN215;
 		tempColor[4] = PAGE_MAIN215;
 		mainpage = PAGE_MAIN215;
+		/* 片选LED */
+		LED_Select = 215;
 	}
 	//跳转主画面2-16
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -914,6 +935,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN223;
 		tempColor[4] = PAGE_MAIN223;
 		mainpage = PAGE_MAIN223;
+		/* 片选LED */
+		LED_Select = 216;
 	}
 	//跳转主画面2-24
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -922,6 +945,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN224;
 		tempColor[4] = PAGE_MAIN224;
 		mainpage = PAGE_MAIN224;
+		/* 片选LED */
+		LED_Select = 224;
 	}
 	//跳转主画面2-25
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -930,6 +955,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN225;
 		tempColor[4] = PAGE_MAIN225;
 		mainpage = PAGE_MAIN225;
+		/* 片选LED */
+		LED_Select = 225;
 	}
 	//跳转主画面2-26
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -938,6 +965,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN226;
 		tempColor[4] = PAGE_MAIN226;
 		mainpage = PAGE_MAIN226;
+		/* 片选LED */
+		LED_Select = 226;
 	}
 	//跳转主画面2-34
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -946,6 +975,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN234;
 		tempColor[4] = PAGE_MAIN234;
 		mainpage = PAGE_MAIN234;
+		/* 片选LED */
+		LED_Select = 234;
 	}
 	//跳转主画面2-35
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -954,6 +985,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN235;
 		tempColor[4] = PAGE_MAIN235;
 		mainpage = PAGE_MAIN235;
+		/* 片选LED */
+		LED_Select = 235;
 	}
 	//跳转主画面2-36
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -962,6 +995,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN236;
 		tempColor[4] = PAGE_MAIN236;
 		mainpage = PAGE_MAIN236;
+		/* 片选LED */
+		LED_Select = 236;
 	}
 	//跳转主画面2-45
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -970,6 +1005,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN245;
 		tempColor[4] = PAGE_MAIN245;
 		mainpage = PAGE_MAIN245;
+		/* 片选LED */
+		LED_Select = 245;
 	}
 	//跳转主画面2-46
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -978,6 +1015,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN246;
 		tempColor[4] = PAGE_MAIN246;
 		mainpage = PAGE_MAIN246;
+		/* 片选LED */
+		LED_Select = 246;
 	}
 	//跳转主画面2-56
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -986,6 +1025,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN256;
 		tempColor[4] = PAGE_MAIN256;
 		mainpage = PAGE_MAIN256;
+		/* 片选LED */
+		LED_Select = 256;
 	}
 	//跳转主画面3-123
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -994,6 +1035,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3123;
 		tempColor[4] = PAGE_MAIN3123;
 		mainpage = PAGE_MAIN3123;
+		/* 片选LED */
+		LED_Select = 3123;
 	}
 	//跳转主画面3-124
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1002,6 +1045,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3124;
 		tempColor[4] = PAGE_MAIN3124;
 		mainpage = PAGE_MAIN3124;
+		/* 片选LED */
+		LED_Select = 3124;
 	}
 	//跳转主画面3-125
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1010,6 +1055,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3125;
 		tempColor[4] = PAGE_MAIN3125;
 		mainpage = PAGE_MAIN3125;
+		/* 片选LED */
+		LED_Select = 3125;
 	}
 	//跳转主画面3-126
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1018,6 +1065,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3126;
 		tempColor[4] = PAGE_MAIN3126;
 		mainpage = PAGE_MAIN3126;
+		/* 片选LED */
+		LED_Select = 3126;
 	}
 	//跳转主画面3-134
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1026,6 +1075,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3134;
 		tempColor[4] = PAGE_MAIN3134;
 		mainpage = PAGE_MAIN3134;
+		/* 片选LED */
+		LED_Select = 3127;
 	}
 	//跳转主画面3-135
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1034,6 +1085,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3135;
 		tempColor[4] = PAGE_MAIN3135;
 		mainpage = PAGE_MAIN3135;
+		/* 片选LED */
+		LED_Select = 3135;
 	}
 	//跳转主画面3-136
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1042,6 +1095,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3136;
 		tempColor[4] = PAGE_MAIN3136;
 		mainpage = PAGE_MAIN3136;
+		/* 片选LED */
+		LED_Select = 3136;
 	}
 	//跳转主画面3-145
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1050,6 +1105,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3145;
 		tempColor[4] = PAGE_MAIN3145;
 		mainpage = PAGE_MAIN3145;
+		/* 片选LED */
+		LED_Select = 3145;
 	}
 	//跳转主画面3-146
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1058,6 +1115,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3146;
 		tempColor[4] = PAGE_MAIN3146;
 		mainpage = PAGE_MAIN3146;
+		/* 片选LED */
+		LED_Select = 3146;
 	}
 	//跳转主画面3-156
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1066,6 +1125,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3156;
 		tempColor[4] = PAGE_MAIN3156;
 		mainpage = PAGE_MAIN3156;
+		/* 片选LED */
+		LED_Select = 3156;
 	}
 	//跳转主画面3-234
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1074,6 +1135,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3234;
 		tempColor[4] = PAGE_MAIN3234;
 		mainpage = PAGE_MAIN3234;
+		/* 片选LED */
+		LED_Select = 3234;
 	}
 	//跳转主画面3-235
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1082,6 +1145,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3235;
 		tempColor[4] = PAGE_MAIN3235;
 		mainpage = PAGE_MAIN3235;
+		/* 片选LED */
+		LED_Select = 3235;
 	}
 	//跳转主画面3-236
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1090,6 +1155,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3236;
 		tempColor[4] = PAGE_MAIN3236;
 		mainpage = PAGE_MAIN3236;
+		/* 片选LED */
+		LED_Select = 3236;
 	}
 	//跳转主画面3-245
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1098,6 +1165,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3245;
 		tempColor[4] = PAGE_MAIN3245;
 		mainpage = PAGE_MAIN3245;
+		/* 片选LED */
+		LED_Select = 3245;
 	}
 	//跳转主画面3-246
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1106,6 +1175,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3246;
 		tempColor[4] = PAGE_MAIN3246;
 		mainpage = PAGE_MAIN3246;
+		/* 片选LED */
+		LED_Select = 3246;
 	}
 	//跳转主画面3-256
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1114,6 +1185,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3256;
 		tempColor[4] = PAGE_MAIN3256;
 		mainpage = PAGE_MAIN3256;
+		/* 片选LED */
+		LED_Select = 3256;
 	}
 	//跳转主画面3-345
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -1122,6 +1195,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3345;
 		tempColor[4] = PAGE_MAIN3345;
 		mainpage = PAGE_MAIN3345;
+		/* 片选LED */
+		LED_Select = 3345;
 	}
 	//跳转主画面3-346
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -1130,6 +1205,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3346;
 		tempColor[4] = PAGE_MAIN3346;
 		mainpage = PAGE_MAIN3346;
+		/* 片选LED */
+		LED_Select = 3346;
 	}
 	//跳转主画面3-356
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -1138,6 +1215,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3356;
 		tempColor[4] = PAGE_MAIN3356;
 		mainpage = PAGE_MAIN3356;
+		/* 片选LED */
+		LED_Select = 3356;
 	}
 	//跳转主画面3-456
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -1146,6 +1225,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN3456;
 		tempColor[4] = PAGE_MAIN3456;
 		mainpage = PAGE_MAIN3456;
+		/* 片选LED */
+		LED_Select = 3456;
 	}
 	//跳转主画面4-1234
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1154,6 +1235,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN41234;
 		tempColor[4] = PAGE_MAIN41234;
 		mainpage = PAGE_MAIN41234;
+		/* 片选LED */
+		LED_Select = 41234;
 	}
 	//跳转主画面4-1235
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1162,6 +1245,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN41235;
 		tempColor[4] = PAGE_MAIN41235;
 		mainpage = PAGE_MAIN41235;
+		/* 片选LED */
+		LED_Select = 41235;
 	}
 	//跳转主画面4-1236
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1170,6 +1255,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN41236;
 		tempColor[4] = PAGE_MAIN41236;
 		mainpage = PAGE_MAIN41236;
+		/* 片选LED */
+		LED_Select = 41236;
 	}
 	//跳转主画面4-1245
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1178,6 +1265,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN41245;
 		tempColor[4] = PAGE_MAIN41245;
 		mainpage = PAGE_MAIN41245;
+		/* 片选LED */
+		LED_Select = 41245;
 	}
 	//跳转主画面4-1246
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1186,6 +1275,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN41246;
 		tempColor[4] = PAGE_MAIN41246;
 		mainpage = PAGE_MAIN41246;
+		/* 片选LED */
+		LED_Select = 41246;
 	}
 	//跳转主画面4-1256
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1194,6 +1285,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN41256;
 		tempColor[4] = PAGE_MAIN41256;
 		mainpage = PAGE_MAIN41256;
+		/* 片选LED */
+		LED_Select = 41256;
 	}
 	//跳转主画面4-1345
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1202,6 +1295,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN41345;
 		tempColor[4] = PAGE_MAIN41345;
 		mainpage = PAGE_MAIN41345;
+		/* 片选LED */
+		LED_Select = 41345;
 	}
 	//跳转主画面4-1346
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1210,6 +1305,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN41346;
 		tempColor[4] = PAGE_MAIN41346;
 		mainpage = PAGE_MAIN41346;
+		/* 片选LED */
+		LED_Select = 41346;
 	}
 	//跳转主画面4-1356
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1218,6 +1315,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN41356;
 		tempColor[4] = PAGE_MAIN41356;
 		mainpage = PAGE_MAIN41356;
+		/* 片选LED */
+		LED_Select = 41356;
 	}
 	//跳转主画面4-1456
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1226,6 +1325,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN41456;
 		tempColor[4] = PAGE_MAIN41456;
 		mainpage = PAGE_MAIN41456;
+		/* 片选LED */
+		LED_Select = 41456;
 	}
 	//跳转主画面4-2345
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1234,6 +1335,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN42345;
 		tempColor[4] = PAGE_MAIN42345;
 		mainpage = PAGE_MAIN42345;
+		/* 片选LED */
+		LED_Select = 42345;
 	}
 	//跳转主画面4-2346
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1242,6 +1345,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN42346;
 		tempColor[4] = PAGE_MAIN42346;
 		mainpage = PAGE_MAIN42346;
+		/* 片选LED */
+		LED_Select = 42346;
 	}
 	//跳转主画面4-2356
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1250,6 +1355,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN42356;
 		tempColor[4] = PAGE_MAIN42356;
 		mainpage = PAGE_MAIN42356;
+		/* 片选LED */
+		LED_Select = 42356;
 	}
 	//跳转主画面4-2456
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1258,6 +1365,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN42456;
 		tempColor[4] = PAGE_MAIN42456;
 		mainpage = PAGE_MAIN42456;
+		/* 片选LED */
+		LED_Select = 42456;
 	}
 	//跳转主画面4-3456
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex == 21
@@ -1266,6 +1375,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN43456;
 		tempColor[4] = PAGE_MAIN43456;
 		mainpage = PAGE_MAIN43456;
+		/* 片选LED */
+		LED_Select = 43456;
 	}
 	//跳转主画面5-12345
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1274,6 +1385,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN512345;
 		tempColor[4] = PAGE_MAIN512345;
 		mainpage = PAGE_MAIN512345;
+		/* 片选LED */
+		LED_Select = 512345;
 	}
 	//跳转主画面5-12346
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1282,6 +1395,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN512346;
 		tempColor[4] = PAGE_MAIN512346;
 		mainpage = PAGE_MAIN512346;
+		/* 片选LED */
+		LED_Select = 512346;
 	}
 	//跳转主画面5-12356
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1290,6 +1405,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN512356;
 		tempColor[4] = PAGE_MAIN512356;
 		mainpage = PAGE_MAIN512356;
+		/* 片选LED */
+		LED_Select = 512356;
 	}
 	//跳转主画面5-12456
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex != 21
@@ -1298,6 +1415,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN512456;
 		tempColor[4] = PAGE_MAIN512456;
 		mainpage = PAGE_MAIN512456;
+		/* 片选LED */
+		LED_Select = 512456;
 	}
 	//跳转主画面5-13456
 	else if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
@@ -1306,6 +1425,8 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN513456;
 		tempColor[4] = PAGE_MAIN513456;
 		mainpage = PAGE_MAIN513456;
+		/* 片选LED */
+		LED_Select = 513456;
 	}
 	//跳转主画面5-23456
 	else if (saveData[0].nameIndex == 21 && saveData[1].nameIndex != 21
@@ -1314,12 +1435,16 @@ void loadMainPage(void) {
 		temp[4] = PAGE_MAIN523456;
 		tempColor[4] = PAGE_MAIN523456;
 		mainpage = PAGE_MAIN523456;
+		/* 片选LED */
+		LED_Select = 523456;
 	}
 	//跳转主画面6
 	else {
 		temp[4] = 0x01;
 		tempColor[4] = 0x01;
 		mainpage = 0x01;
+		/* 片选LED */
+		LED_Select = 6;
 	}
 	/* 通道 1 名称 */
 	temp[5] = 0x00;
@@ -1846,6 +1971,43 @@ void loadMainPage(void) {
 	//修改音量图标
 	HAL_UART_Transmit(&huart2, volumePicCMD, 12, SendTime);
 	HAL_Delay(200);
+	/* 片选LED */
+	if (LED_Select > 10 && LED_Select < 17) {
+		A0(0);
+		A1(0);
+		A2(0);
+		E3(1);
+	}
+	if (LED_Select > 211 && LED_Select < 257) {
+		A0(1);
+		A1(0);
+		A2(0);
+		E3(0);
+	}
+	if (LED_Select > 3122 && LED_Select < 3457) {
+		A0(0);
+		A1(1);
+		A2(0);
+		E3(1);
+	}
+	if (LED_Select > 41233 && LED_Select < 43457) {
+		A0(1);
+		A1(1);
+		A2(0);
+		E3(0);
+	}
+	if (LED_Select > 512344) {
+		A0(0);
+		A1(0);
+		A2(1);
+		E3(1);
+	}
+	if (LED_Select < 7) {
+		A0(1);
+		A1(0);
+		A2(1);
+		E3(0);
+	}
 	//跳转至主屏幕
 	//EE B1 00 00 01 FF FC FF FF
 	temp[0] = 0xEE;  			//帧头
@@ -3782,656 +3944,1789 @@ void updateUI(void) {
  * @出口参数 : 无
  * @历史版本 : V0.0.1 - Ethan - 2018/01/03
  */
+//void updateLed(int8_t select) {
+//	uint8_t i;
+//	if (select == 1) {
+//		LED345(0);
+//		LED012(1);
+//
+//		for (i = 0; i < 3; i++) {
+//			switch (ledFlag[i]) {
+//			/* 正常 */
+//			case 0:
+//				if (i == 0) {
+//
+//					LED0A(0);
+//					LED1A(1);
+//					LED2A(0);
+//				}
+//				if (i == 1) {
+//
+//					LED0B(0);
+//					LED1B(1);
+//					LED2B(0);
+//				}
+//				if (i == 2) {
+//
+//					LED0C(0);
+//					LED1C(1);
+//					LED2C(0);
+//				}
+//				if (i == 3) {
+//
+//					LED0A(0);
+//					LED1A(1);
+//					LED2A(0);
+//				}
+//				if (i == 4) {
+//
+//					LED0B(0);
+//					LED1B(1);
+//					LED2B(0);
+//				}
+//				if (i == 5) {
+//
+//					LED0C(0);
+//					LED1C(1);
+//					LED2C(0);
+//				}
+//				break;
+//				/* 欠压 */
+//			case 1:
+//				if (doubleLight == 1) {
+//					if (i == 0) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(1);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(1);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(1);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(1);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(1);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(1);
+//					}
+//				} else {
+//					if (i == 0) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//				}
+//				break;
+//				/* 超压 */
+//			case 2:
+//				if (doubleLight == 1) {
+//					if (i == 0) {
+//
+//						LED0A(1);
+//						LED2A(0);
+//						LED1A(0);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(1);
+//						LED2B(0);
+//						LED1B(0);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(1);
+//						LED2C(0);
+//						LED1C(0);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(1);
+//						LED2A(0);
+//						LED1A(0);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(1);
+//						LED2B(0);
+//						LED1B(0);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(1);
+//						LED2C(0);
+//						LED1C(0);
+//					}
+//				} else {
+//					if (i == 0) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//				}
+//				break;
+//				/* 未使用 */
+//			case 3:
+//				if (i == 0) {
+//
+//					LED0A(0);
+//					LED1A(0);
+//					LED2A(0);
+//				}
+//				if (i == 1) {
+//
+//					LED0B(0);
+//					LED1B(0);
+//					LED2B(0);
+//				}
+//				if (i == 2) {
+//
+//					LED0C(0);
+//					LED1C(0);
+//					LED2C(0);
+//				}
+//				if (i == 3) {
+//
+//					LED0A(0);
+//					LED1A(0);
+//					LED2A(0);
+//				}
+//				if (i == 4) {
+//
+//					LED0B(0);
+//					LED1B(0);
+//					LED2B(0);
+//				}
+//				if (i == 5) {
+//
+//					LED0C(0);
+//					LED1C(0);
+//					LED2C(0);
+//				}
+//				break;
+//				/* 无信号输入 */
+//			case 4:
+//				if (doubleLight == 1) {
+//					if (i == 0) {
+//
+//						LED0A(1);
+//						LED1A(0);
+//						LED2A(1);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(1);
+//						LED1B(0);
+//						LED2B(1);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(1);
+//						LED1C(0);
+//						LED2C(1);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(1);
+//						LED1A(0);
+//						LED2A(1);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(1);
+//						LED1B(0);
+//						LED2B(1);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(1);
+//						LED1C(0);
+//						LED2C(1);
+//					}
+//				} else {
+//					if (i == 0) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//				}
+//				break;
+//			default:
+//				break;
+//			}
+//		}
+//	}
+//	if (select == 0) {
+//		LED345(1);
+//		LED012(0);
+//
+//		for (i = 3; i < 6; i++) {
+//			switch (ledFlag[i]) {
+//			/* 正常 */
+//			case 0:
+//				if (i == 0) {
+//
+//					LED0A(0);
+//					LED1A(1);
+//					LED2A(0);
+//				}
+//				if (i == 1) {
+//
+//					LED0B(0);
+//					LED1B(1);
+//					LED2B(0);
+//				}
+//				if (i == 2) {
+//
+//					LED0C(0);
+//					LED1C(1);
+//					LED2C(0);
+//				}
+//				if (i == 3) {
+//
+//					LED0A(0);
+//					LED1A(1);
+//					LED2A(0);
+//				}
+//				if (i == 4) {
+//
+//					LED0B(0);
+//					LED1B(1);
+//					LED2B(0);
+//				}
+//				if (i == 5) {
+//
+//					LED0C(0);
+//					LED1C(1);
+//					LED2C(0);
+//				}
+//				break;
+//				/* 欠压 */
+//			case 1:
+//				if (doubleLight == 1) {
+//					if (i == 0) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(1);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(1);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(1);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(1);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(1);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(1);
+//					}
+//				} else {
+//					if (i == 0) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//				}
+//				break;
+//				/* 超压 */
+//			case 2:
+//				if (doubleLight == 1) {
+//					if (i == 0) {
+//
+//						LED0A(1);
+//						LED2A(0);
+//						LED1A(0);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(1);
+//						LED2B(0);
+//						LED1B(0);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(1);
+//						LED2C(0);
+//						LED1C(0);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(1);
+//						LED2A(0);
+//						LED1A(0);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(1);
+//						LED2B(0);
+//						LED1B(0);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(1);
+//						LED2C(0);
+//						LED1C(0);
+//					}
+//				} else {
+//					if (i == 0) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//				}
+//				break;
+//				/* 未使用 */
+//			case 3:
+//				if (i == 0) {
+//
+//					LED0A(0);
+//					LED1A(0);
+//					LED2A(0);
+//				}
+//				if (i == 1) {
+//
+//					LED0B(0);
+//					LED1B(0);
+//					LED2B(0);
+//				}
+//				if (i == 2) {
+//
+//					LED0C(0);
+//					LED1C(0);
+//					LED2C(0);
+//				}
+//				if (i == 3) {
+//
+//					LED0A(0);
+//					LED1A(0);
+//					LED2A(0);
+//				}
+//				if (i == 4) {
+//
+//					LED0B(0);
+//					LED1B(0);
+//					LED2B(0);
+//				}
+//				if (i == 5) {
+//
+//					LED0C(0);
+//					LED1C(0);
+//					LED2C(0);
+//				}
+//				break;
+//				/* 无信号输入 */
+//			case 4:
+//				if (doubleLight == 1) {
+//					if (i == 0) {
+//
+//						LED0A(1);
+//						LED1A(0);
+//						LED2A(1);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(1);
+//						LED1B(0);
+//						LED2B(1);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(1);
+//						LED1C(0);
+//						LED2C(1);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(1);
+//						LED1A(0);
+//						LED2A(1);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(1);
+//						LED1B(0);
+//						LED2B(1);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(1);
+//						LED1C(0);
+//						LED2C(1);
+//					}
+//				} else {
+//					if (i == 0) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 1) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 2) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//					if (i == 3) {
+//
+//						LED0A(0);
+//						LED1A(0);
+//						LED2A(0);
+//					}
+//					if (i == 4) {
+//
+//						LED0B(0);
+//						LED1B(0);
+//						LED2B(0);
+//					}
+//					if (i == 5) {
+//
+//						LED0C(0);
+//						LED1C(0);
+//						LED2C(0);
+//					}
+//				}
+//				break;
+//			default:
+//				break;
+//			}
+//		}
+//	}
+//}
+/**
+ * @功能简介 : 更新Led
+ * @入口参数 : 无
+ * @出口参数 : 无
+ * @历史版本 : V0.0.1 - Ethan - 2018/01/03
+ */
 void updateLed(int8_t select) {
 	uint8_t i;
-	if (select == 1) {
-		LED345(0);
-		LED012(1);
-
-		for (i = 0; i < 3; i++) {
-			switch (ledFlag[i]) {
-			/* 正常 */
-			case 0:
-				if (i == 0) {
-
-					LED0A(0);
-					LED1A(1);
-					LED2A(0);
-				}
-				if (i == 1) {
-
-					LED0B(0);
-					LED1B(1);
-					LED2B(0);
-				}
-				if (i == 2) {
-
-					LED0C(0);
-					LED1C(1);
-					LED2C(0);
-				}
-				if (i == 3) {
-
-					LED0A(0);
-					LED1A(1);
-					LED2A(0);
-				}
-				if (i == 4) {
-
-					LED0B(0);
-					LED1B(1);
-					LED2B(0);
-				}
-				if (i == 5) {
-
-					LED0C(0);
-					LED1C(1);
-					LED2C(0);
-				}
-				break;
-				/* 欠压 */
-			case 1:
-				if (doubleLight == 1) {
-					if (i == 0) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(1);
-					}
-					if (i == 1) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(1);
-					}
-					if (i == 2) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(1);
-					}
-					if (i == 3) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(1);
-					}
-					if (i == 4) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(1);
-					}
-					if (i == 5) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(1);
-					}
-				} else {
-					if (i == 0) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 1) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 2) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-					if (i == 3) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 4) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 5) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
+	for (i = 0; i < 6; i++) {
+		switch (ledFlag[i]) {
+		/* 正常 */
+		case 0:
+			if (i == 0) {
+				if (saveData[0].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(0);
+					} else {
+						LED1(0);
 					}
 				}
-				break;
-				/* 超压 */
-			case 2:
-				if (doubleLight == 1) {
-					if (i == 0) {
-
-						LED0A(1);
-						LED2A(0);
-						LED1A(0);
-					}
-					if (i == 1) {
-
-						LED0B(1);
-						LED2B(0);
-						LED1B(0);
-					}
-					if (i == 2) {
-
-						LED0C(1);
-						LED2C(0);
-						LED1C(0);
-					}
-					if (i == 3) {
-
-						LED0A(1);
-						LED2A(0);
-						LED1A(0);
-					}
-					if (i == 4) {
-
-						LED0B(1);
-						LED2B(0);
-						LED1B(0);
-					}
-					if (i == 5) {
-
-						LED0C(1);
-						LED2C(0);
-						LED1C(0);
-					}
-				} else {
-					if (i == 0) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 1) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 2) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-					if (i == 3) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 4) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 5) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-				}
-				break;
-				/* 未使用 */
-			case 3:
-				if (i == 0) {
-
-					LED0A(0);
-					LED1A(0);
-					LED2A(0);
-				}
-				if (i == 1) {
-
-					LED0B(0);
-					LED1B(0);
-					LED2B(0);
-				}
-				if (i == 2) {
-
-					LED0C(0);
-					LED1C(0);
-					LED2C(0);
-				}
-				if (i == 3) {
-
-					LED0A(0);
-					LED1A(0);
-					LED2A(0);
-				}
-				if (i == 4) {
-
-					LED0B(0);
-					LED1B(0);
-					LED2B(0);
-				}
-				if (i == 5) {
-
-					LED0C(0);
-					LED1C(0);
-					LED2C(0);
-				}
-				break;
-				/* 无信号输入 */
-			case 4:
-				if (doubleLight == 1) {
-					if (i == 0) {
-
-						LED0A(1);
-						LED1A(0);
-						LED2A(1);
-					}
-					if (i == 1) {
-
-						LED0B(1);
-						LED1B(0);
-						LED2B(1);
-					}
-					if (i == 2) {
-
-						LED0C(1);
-						LED1C(0);
-						LED2C(1);
-					}
-					if (i == 3) {
-
-						LED0A(1);
-						LED1A(0);
-						LED2A(1);
-					}
-					if (i == 4) {
-
-						LED0B(1);
-						LED1B(0);
-						LED2B(1);
-					}
-					if (i == 5) {
-
-						LED0C(1);
-						LED1C(0);
-						LED2C(1);
-					}
-				} else {
-					if (i == 0) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 1) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 2) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-					if (i == 3) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 4) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 5) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-				}
-				break;
-			default:
-				break;
 			}
+			if (i == 1) {
+				if (saveData[1].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(0);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21) {
+							LED7(0);
+						} else {
+							LED1(0);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21) {
+							LED4(0);
+						} else {
+							LED1(0);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21) {
+							LED2(0);
+						} else {
+							LED1(0);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21) {
+							LED2(0);
+						} else {
+							LED1(0);
+						}
+					}
+					if (LED_Select < 7) {
+						LED2(0);
+					}
+				}
+			}
+			if (i == 2) {
+				if (saveData[2].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(0);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21
+								|| saveData[1].nameIndex != 21) {
+							LED7(0);
+						} else {
+							LED1(0);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED7(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED4(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED4(0);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED6(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED2(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED2(0);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED4(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED2(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED2(0);
+						}
+					}
+					if (LED_Select < 7) {
+						LED3(0);
+					}
+				}
+			}
+			if (i == 3) {
+				if (saveData[3].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(0);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21
+								|| saveData[1].nameIndex != 21
+								|| saveData[2].nameIndex != 21) {
+							LED7(0);
+						} else {
+							LED1(0);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED7(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED4(0);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED7(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED6(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED2(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(0);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED4(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED2(0);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(0);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(0);
+						}
+					}
+					if (LED_Select < 7) {
+						LED5(0);
+					}
+				}
+			}
+			if (i == 4) {
+				if (saveData[4].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(0);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[5].nameIndex != 21) {
+							LED1(0);
+						} else {
+							LED7(0);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[5].nameIndex != 21) {
+							LED4(0);
+						} else {
+							LED7(0);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[5].nameIndex != 21) {
+							LED6(0);
+						} else {
+							LED7(0);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[5].nameIndex != 21) {
+							LED6(0);
+						} else {
+							LED7(0);
+						}
+					}
+					if (LED_Select < 7) {
+						LED6(0);
+					}
+				}
+			}
+			if (i == 5) {
+				if (saveData[5].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(0);
+					} else {
+						LED7(0);
+					}
+				}
+			}
+			break;
+			/* 欠压 */
+		case 1:
+			if (i == 0) {
+				if (saveData[0].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					} else {
+						LED1(1);
+					}
+				}
+			}
+			if (i == 1) {
+				if (saveData[1].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21) {
+							LED7(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21) {
+							LED4(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21) {
+							LED2(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21) {
+							LED2(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED2(1);
+					}
+				}
+			}
+			if (i == 2) {
+				if (saveData[2].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21
+								|| saveData[1].nameIndex != 21) {
+							LED7(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED7(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED4(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED3(1);
+					}
+				}
+			}
+			if (i == 3) {
+				if (saveData[3].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21
+								|| saveData[1].nameIndex != 21
+								|| saveData[2].nameIndex != 21) {
+							LED7(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED7(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED4(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED7(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED5(1);
+					}
+				}
+			}
+			if (i == 4) {
+				if (saveData[4].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[5].nameIndex != 21) {
+							LED1(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[5].nameIndex != 21) {
+							LED4(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[5].nameIndex != 21) {
+							LED6(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[5].nameIndex != 21) {
+							LED6(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED6(1);
+					}
+				}
+			}
+			if (i == 5) {
+				if (saveData[5].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					} else {
+						LED7(1);
+					}
+				}
+			}
+			break;
+			/* 超压 */
+		case 2:
+			if (i == 0) {
+				if (saveData[0].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					} else {
+						LED1(1);
+					}
+				}
+			}
+			if (i == 1) {
+				if (saveData[1].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21) {
+							LED7(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21) {
+							LED4(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21) {
+							LED2(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21) {
+							LED2(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED2(1);
+					}
+				}
+			}
+			if (i == 2) {
+				if (saveData[2].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21
+								|| saveData[1].nameIndex != 21) {
+							LED7(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED7(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED4(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED3(1);
+					}
+				}
+			}
+			if (i == 3) {
+				if (saveData[3].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21
+								|| saveData[1].nameIndex != 21
+								|| saveData[2].nameIndex != 21) {
+							LED7(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED7(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED4(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED7(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED5(1);
+					}
+				}
+			}
+			if (i == 4) {
+				if (saveData[4].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[5].nameIndex != 21) {
+							LED1(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[5].nameIndex != 21) {
+							LED4(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[5].nameIndex != 21) {
+							LED6(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[5].nameIndex != 21) {
+							LED6(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED6(1);
+					}
+				}
+			}
+			if (i == 5) {
+				if (saveData[5].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					} else {
+						LED7(1);
+					}
+				}
+			}
+			break;
+			/* 未使用 */
+		case 3:
+			break;
+			/* 无信号输入 */
+		case 4:
+			if (i == 0) {
+				if (saveData[0].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					} else {
+						LED1(1);
+					}
+				}
+			}
+			if (i == 1) {
+				if (saveData[1].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21) {
+							LED7(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21) {
+							LED4(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21) {
+							LED2(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21) {
+							LED2(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED2(1);
+					}
+				}
+			}
+			if (i == 2) {
+				if (saveData[2].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21
+								|| saveData[1].nameIndex != 21) {
+							LED7(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED7(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED4(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED3(1);
+					}
+				}
+			}
+			if (i == 3) {
+				if (saveData[3].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[0].nameIndex != 21
+								|| saveData[1].nameIndex != 21
+								|| saveData[2].nameIndex != 21) {
+							LED7(1);
+						} else {
+							LED1(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED7(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED4(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED7(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED6(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED1(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED4(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex != 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex != 21
+								&& saveData[1].nameIndex == 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						} else if (saveData[0].nameIndex == 21
+								&& saveData[1].nameIndex != 21
+								&& saveData[2].nameIndex == 21) {
+							LED2(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED5(1);
+					}
+				}
+			}
+			if (i == 4) {
+				if (saveData[4].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					}
+					if (LED_Select > 211 && LED_Select < 257) {
+						if (saveData[5].nameIndex != 21) {
+							LED1(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select > 3122 && LED_Select < 3457) {
+						if (saveData[5].nameIndex != 21) {
+							LED4(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select > 41233 && LED_Select < 43457) {
+						if (saveData[5].nameIndex != 21) {
+							LED6(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select > 512344) {
+						if (saveData[5].nameIndex != 21) {
+							LED6(1);
+						} else {
+							LED7(1);
+						}
+					}
+					if (LED_Select < 7) {
+						LED6(1);
+					}
+				}
+			}
+			if (i == 5) {
+				if (saveData[5].nameIndex != 21) {
+					/* 片选LED */
+					if (LED_Select > 10 && LED_Select < 17) {
+						LED4(1);
+					} else {
+						LED7(1);
+					}
+				}
+			}
+			break;
+		default:
+			break;
 		}
 	}
-	if (select == 0) {
-		LED345(1);
-		LED012(0);
-
-		for (i = 3; i < 6; i++) {
-			switch (ledFlag[i]) {
-			/* 正常 */
-			case 0:
-				if (i == 0) {
-
-					LED0A(0);
-					LED1A(1);
-					LED2A(0);
-				}
-				if (i == 1) {
-
-					LED0B(0);
-					LED1B(1);
-					LED2B(0);
-				}
-				if (i == 2) {
-
-					LED0C(0);
-					LED1C(1);
-					LED2C(0);
-				}
-				if (i == 3) {
-
-					LED0A(0);
-					LED1A(1);
-					LED2A(0);
-				}
-				if (i == 4) {
-
-					LED0B(0);
-					LED1B(1);
-					LED2B(0);
-				}
-				if (i == 5) {
-
-					LED0C(0);
-					LED1C(1);
-					LED2C(0);
-				}
-				break;
-				/* 欠压 */
-			case 1:
-				if (doubleLight == 1) {
-					if (i == 0) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(1);
-					}
-					if (i == 1) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(1);
-					}
-					if (i == 2) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(1);
-					}
-					if (i == 3) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(1);
-					}
-					if (i == 4) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(1);
-					}
-					if (i == 5) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(1);
-					}
-				} else {
-					if (i == 0) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 1) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 2) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-					if (i == 3) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 4) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 5) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-				}
-				break;
-				/* 超压 */
-			case 2:
-				if (doubleLight == 1) {
-					if (i == 0) {
-
-						LED0A(1);
-						LED2A(0);
-						LED1A(0);
-					}
-					if (i == 1) {
-
-						LED0B(1);
-						LED2B(0);
-						LED1B(0);
-					}
-					if (i == 2) {
-
-						LED0C(1);
-						LED2C(0);
-						LED1C(0);
-					}
-					if (i == 3) {
-
-						LED0A(1);
-						LED2A(0);
-						LED1A(0);
-					}
-					if (i == 4) {
-
-						LED0B(1);
-						LED2B(0);
-						LED1B(0);
-					}
-					if (i == 5) {
-
-						LED0C(1);
-						LED2C(0);
-						LED1C(0);
-					}
-				} else {
-					if (i == 0) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 1) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 2) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-					if (i == 3) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 4) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 5) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-				}
-				break;
-				/* 未使用 */
-			case 3:
-				if (i == 0) {
-
-					LED0A(0);
-					LED1A(0);
-					LED2A(0);
-				}
-				if (i == 1) {
-
-					LED0B(0);
-					LED1B(0);
-					LED2B(0);
-				}
-				if (i == 2) {
-
-					LED0C(0);
-					LED1C(0);
-					LED2C(0);
-				}
-				if (i == 3) {
-
-					LED0A(0);
-					LED1A(0);
-					LED2A(0);
-				}
-				if (i == 4) {
-
-					LED0B(0);
-					LED1B(0);
-					LED2B(0);
-				}
-				if (i == 5) {
-
-					LED0C(0);
-					LED1C(0);
-					LED2C(0);
-				}
-				break;
-				/* 无信号输入 */
-			case 4:
-				if (doubleLight == 1) {
-					if (i == 0) {
-
-						LED0A(1);
-						LED1A(0);
-						LED2A(1);
-					}
-					if (i == 1) {
-
-						LED0B(1);
-						LED1B(0);
-						LED2B(1);
-					}
-					if (i == 2) {
-
-						LED0C(1);
-						LED1C(0);
-						LED2C(1);
-					}
-					if (i == 3) {
-
-						LED0A(1);
-						LED1A(0);
-						LED2A(1);
-					}
-					if (i == 4) {
-
-						LED0B(1);
-						LED1B(0);
-						LED2B(1);
-					}
-					if (i == 5) {
-
-						LED0C(1);
-						LED1C(0);
-						LED2C(1);
-					}
-				} else {
-					if (i == 0) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 1) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 2) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-					if (i == 3) {
-
-						LED0A(0);
-						LED1A(0);
-						LED2A(0);
-					}
-					if (i == 4) {
-
-						LED0B(0);
-						LED1B(0);
-						LED2B(0);
-					}
-					if (i == 5) {
-
-						LED0C(0);
-						LED1C(0);
-						LED2C(0);
-					}
-				}
-				break;
-			default:
-				break;
-			}
-		}
-	}
+	if (alarmFlag == 4)
+		DOUBLELIGHT(doubleLight);
+	else
+		DOUBLELIGHT(1);
 }
-
 /**
  * 函数功能: ADC转换完成回调函数
  * 输入参数: ADCHandle：ADC外设设备句柄
@@ -4863,21 +6158,22 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *tim_baseHandle) {
 //跳转主画面3
 //跳转至主屏幕
 //EE B1 00 00 01 FF FC FF FF
-			temp[0] = 0xEE;	//帧头
-			temp[1] = NOTIFY_CONTROL;	//命令类型(UPDATE_CONTROL)
-			temp[2] = 0x00;	//CtrlMsgType-指示消息的类型
-			temp[3] = 0x00;	//产生消息的画面ID
-			temp[4] = 0x01;
-			temp[5] = 0xFF;	//帧尾
-			temp[6] = 0xFC;
-			temp[7] = 0xFF;
-			temp[8] = 0xFF;
-			HAL_UART_Transmit(&huart2, temp, 9, SendTime);
-			lastPage = currentPage;
-			currentPage = PAGE_MAIN3;
-			timeStamp = SELFTESTTIME;
+//			temp[0] = 0xEE;	//帧头
+//			temp[1] = NOTIFY_CONTROL;	//命令类型(UPDATE_CONTROL)
+//			temp[2] = 0x00;	//CtrlMsgType-指示消息的类型
+//			temp[3] = 0x00;	//产生消息的画面ID
+//			temp[4] = 0x01;
+//			temp[5] = 0xFF;	//帧尾
+//			temp[6] = 0xFC;
+//			temp[7] = 0xFF;
+//			temp[8] = 0xFF;
+//			HAL_UART_Transmit(&huart2, temp, 9, SendTime);
+//			lastPage = currentPage;
+//			currentPage = PAGE_MAIN3;
+//			timeStamp = SELFTESTTIME;
 
-			alarm_off();
+//			alarm_off();
+			loadMainPage();
 		}
 	}
 }
