@@ -5759,7 +5759,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 		HAL_UART_DMAStop(&huart3);
 
 		unsigned char buffer[8];
-		uint8_t send_mydata[150];
+		uint8_t send_mydata[200];
 		unsigned short crc;
 		unsigned char i, sendcount;
 		unsigned int record_num, record_add;
@@ -5790,8 +5790,8 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 			if (record_add > 256)
 				record_add = 256;
 			record_num = RS485_RX_BUF[5] * 2;     //组合为数据长度＠├┱阔啊站 看扩展为2倍 数量�
-			if (record_num > 128)
-				record_num = 128;
+			if (record_num > 200)
+				record_num = 200;
 
 			// rom485[61]//=rom485[81];
 			// rom485[63]//=rom485[83];
@@ -5841,7 +5841,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 		} else {
 			/* 已连接蓝牙发送当前所有数据 */
 			unsigned char buffer[8];
-			uint8_t send_mydata[150];
+			uint8_t send_mydata[200];
 			unsigned short crc;
 			unsigned char i = 0, sendcount;
 			unsigned int record_num, record_add;
@@ -5875,8 +5875,8 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				if (record_add > 256)
 					record_add = 256;
 				record_num = BLUETOOTH_RX_BUF[5] * 2; //组合为数据长度＠├┱阔啊站 看扩展为2倍 数量�
-				if (record_num > 128)
-					record_num = 128;
+				if (record_num > 200)
+					record_num = 200;
 				// rom485[61]//=rom485[81];
 				//  rom485[63]//=rom485[83];
 				//修改真空报警状态， 上下报警互换
@@ -6008,7 +6008,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 
 				//清空
 				memset(send_mydata, 0, sizeof(send_mydata));
-				// 地址
+				//地址
 				send_mydata[0] = 0xFF;         //地址
 				send_mydata[1] = 0x10;         // 功能码
 				send_mydata[2] = BLUETOOTH_RX_BUF[2];	//起始寄存器地址
@@ -6025,8 +6025,8 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 			// 判断地址、命令与crc校验
 			if ((BLUETOOTH_RX_BUF[0] == 0xFF)
 					&& (BLUETOOTH_RX_BUF[1] == 0x06)    //test按钮、mute按钮、刷新界面
-					&& (BLUETOOTH_RX_BUF[BLUETOOTH_RX_BUF[6] + 7] == buffer[6])
-					&& (BLUETOOTH_RX_BUF[BLUETOOTH_RX_BUF[6] + 8] == buffer[7])) { // 成功后组合数据 计算 CRC 并发送。
+					&& (BLUETOOTH_RX_BUF[BLUETOOTH_RX_BUF[5] + 6] == buffer[6])
+					&& (BLUETOOTH_RX_BUF[BLUETOOTH_RX_BUF[5] + 7] == buffer[7])) { // 成功后组合数据 计算 CRC 并发送。
 
 				//test按钮
 				if (BLUETOOTH_RX_BUF[3] == 0x01) {
@@ -6050,6 +6050,21 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 							&& (ledFlag[2] != 0 || ledFlag[2] != 3)) {
 						volumePicCMD[7] = 0 + alarmFlag;
 						muteFlag[2] = 1;
+					}
+					if (muteFlag[3] == 0
+							&& (ledFlag[3] != 0 || ledFlag[3] != 3)) {
+						volumePicCMD[7] = 0 + alarmFlag;
+						muteFlag[3] = 1;
+					}
+					if (muteFlag[4] == 0
+							&& (ledFlag[4] != 0 || ledFlag[4] != 3)) {
+						volumePicCMD[7] = 0 + alarmFlag;
+						muteFlag[4] = 1;
+					}
+					if (muteFlag[5] == 0
+							&& (ledFlag[5] != 0 || ledFlag[5] != 3)) {
+						volumePicCMD[7] = 0 + alarmFlag;
+						muteFlag[5] = 1;
 					} else {
 						volumePicCMD[7] = (uint8_t) (saveData[0].volume / 10);
 						if (volumePicCMD[7] <= 4) {
@@ -6074,6 +6089,21 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 								&& (ledFlag[2] != 0 || ledFlag[2] != 3)) {
 							volumePicCMD[7] = 0 + alarmFlag;
 							muteFlag[2] = 0;
+						}
+						if (muteFlag[3] == 1
+								&& (ledFlag[3] != 0 || ledFlag[3] != 3)) {
+							volumePicCMD[7] = 0 + alarmFlag;
+							muteFlag[3] = 0;
+						}
+						if (muteFlag[4] == 1
+								&& (ledFlag[4] != 0 || ledFlag[4] != 3)) {
+							volumePicCMD[7] = 0 + alarmFlag;
+							muteFlag[4] = 0;
+						}
+						if (muteFlag[5] == 1
+								&& (ledFlag[5] != 0 || ledFlag[5] != 3)) {
+							volumePicCMD[7] = 0 + alarmFlag;
+							muteFlag[5] = 0;
 						}
 					}
 					//修改音量图标
@@ -6168,12 +6198,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *tim_baseHandle) {
 //			temp[7] = 0xFF;
 //			temp[8] = 0xFF;
 //			HAL_UART_Transmit(&huart2, temp, 9, SendTime);
-//			lastPage = currentPage;
+			lastPage = currentPage;
 //			currentPage = PAGE_MAIN3;
-//			timeStamp = SELFTESTTIME;
+			timeStamp = SELFTESTTIME;
 
 //			alarm_off();
 			loadMainPage();
+			testFlag = 1;
 		}
 	}
 }
