@@ -6237,6 +6237,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_PIN) {
 			if (muteFlag[2] == 0 && (ledFlag[2] != 0 || ledFlag[2] != 3)) {
 				volumePicCMD[7] = 0 + alarmFlag;
 				muteFlag[2] = 1;
+			}
+			if (muteFlag[3] == 0 && (ledFlag[3] != 0 || ledFlag[3] != 3)) {
+				volumePicCMD[7] = 0 + alarmFlag;
+				muteFlag[3] = 1;
+			}
+			if (muteFlag[4] == 0 && (ledFlag[4] != 0 || ledFlag[4] != 3)) {
+				volumePicCMD[7] = 0 + alarmFlag;
+				muteFlag[4] = 1;
+			}
+			if (muteFlag[5] == 0 && (ledFlag[5] != 0 || ledFlag[5] != 3)) {
+				volumePicCMD[7] = 0 + alarmFlag;
+				muteFlag[5] = 1;
 			} else {
 				volumePicCMD[7] = (uint8_t) (saveData[0].volume / 10);
 				if (volumePicCMD[7] <= 4) {
@@ -6257,6 +6269,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_PIN) {
 				if (muteFlag[2] == 1 && (ledFlag[2] != 0 || ledFlag[2] != 3)) {
 					volumePicCMD[7] = 0 + alarmFlag;
 					muteFlag[2] = 0;
+				}
+				if (muteFlag[3] == 1 && (ledFlag[3] != 0 || ledFlag[3] != 3)) {
+					volumePicCMD[7] = 0 + alarmFlag;
+					muteFlag[3] = 0;
+				}
+				if (muteFlag[4] == 1 && (ledFlag[4] != 0 || ledFlag[4] != 3)) {
+					volumePicCMD[7] = 0 + alarmFlag;
+					muteFlag[4] = 0;
+				}
+				if (muteFlag[5] == 1 && (ledFlag[5] != 0 || ledFlag[5] != 3)) {
+					volumePicCMD[7] = 0 + alarmFlag;
+					muteFlag[5] = 0;
 				}
 			}
 			//修改音量图标
