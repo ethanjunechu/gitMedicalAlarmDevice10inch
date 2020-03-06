@@ -515,7 +515,7 @@ void NotifyScreen(uint16_t screen_id) {
 			temp[28] += '0';
 			temp[29] += '0';
 
-			//加载密码
+//			加载密码
 			temp[31] = 0x00;
 			temp[32] = 0x06;
 			temp[33] = 0x00;
@@ -528,27 +528,33 @@ void NotifyScreen(uint16_t screen_id) {
 			temp[i + 36] = 0xFF;
 			temp[i + 37] = 0xFF;
 			HAL_UART_Transmit(&huart2, temp, i + 38, SendTime);
+			HAL_Delay(200);
 			//加载波特率
 			//EE B1 10 00 04 00 02 00 FF FC FF FF
-			temp[3] = 0x10;
-			temp[4] = 0x00;
-			temp[5] = 0x04;
-			temp[6] = 0x00;
-			temp[7] = 0x02;
-			temp[8] = saveData[0].baudrateIndex;
-			temp[9] = 0xFF;
-			temp[10] = 0xFC;
+			temp[2] = 0x10;
+			temp[3] = 0x00;
+			temp[4] = 0x04;
+			temp[5] = 0x00;
+			temp[6] = 0x02;
+			temp[7] = saveData[0].baudrateIndex;
+			temp[8] = 0xFF;
+			temp[9] = 0xFC;
+			temp[10] = 0xFF;
 			temp[11] = 0xFF;
-			temp[12] = 0xFF;
-			HAL_UART_Transmit(&huart2, temp, 13, SendTime);
+			HAL_UART_Transmit(&huart2, temp, 12, SendTime);
+			HAL_Delay(200);
 			//加载模式
-			temp[7] = 0x04;
-			temp[8] = saveData[0].modeIndex;
-			HAL_UART_Transmit(&huart2, temp, 13, SendTime);
+//			temp[6] = 0x04;
+//			temp[7] = saveData[0].modeIndex;
+//			HAL_UART_Transmit(&huart2, temp, 12, SendTime);
 			//加载音量
-			temp[7] = 0x05;
-			temp[8] = (uint8_t) (saveData[0].volume / 10);
-			HAL_UART_Transmit(&huart2, temp, 13, SendTime);
+			temp[6] = 0x05;
+			if (saveData[0].volume == 0) {
+				temp[7] = 0;
+			} else
+				temp[7] = (uint8_t) ((saveData[0].volume - 50) / 5);
+			HAL_UART_Transmit(&huart2, temp, 12, SendTime);
+			HAL_Delay(200);
 		}
 
 		if (currentPage == PAGE_BLUETOOTH) {
@@ -583,7 +589,7 @@ void NotifyTouchXY(uint8_t press, uint16_t x, uint16_t y) {
 void NotifyButton(uint16_t screen_id, uint16_t control_id, uint8_t state) {
 	getUIFlag = 0;
 	/* 密码界面确认按钮 */
-	if (currentPage == PAGE_PASSWORD && control_id == 2) {
+	if (screen_id == PAGE_PASSWORD && control_id == 2) {
 		uint8_t temp[50];
 		uint8_t daysASCii[6] = { 0, 0, 0, 0, 0, 0 }; //第一位长度
 		uint8_t i = 0, j = 1;
@@ -812,7 +818,7 @@ void NotifyButton(uint16_t screen_id, uint16_t control_id, uint8_t state) {
 	}/* END 密码界面确认按钮 */
 
 	/* 密码界面取消按钮 */
-	if (currentPage == PAGE_PASSWORD && control_id == 3) {
+	if (screen_id == PAGE_PASSWORD && control_id == 3) {
 		/* 密码界面无参数修改，无需复原参数 */
 		//跳转至load屏幕
 		//EE B1 00 00 01 FF FC FF FF
@@ -825,7 +831,7 @@ void NotifyButton(uint16_t screen_id, uint16_t control_id, uint8_t state) {
 	}/* END 密码界面取消按钮 */
 
 	/* set1取消按钮 */
-	if (currentPage == PAGE_SET1 && control_id == 9) {
+	if (screen_id == PAGE_SET1 && control_id == 9) {
 		//跳转至load屏幕
 		//EE B1 00 00 01 FF FC FF FF
 		uint8_t temp5[9] = { 0xEE, 0xB1, 0x00, 0x00, 0x07, 0xFF, 0xFC, 0xFF,
@@ -838,7 +844,7 @@ void NotifyButton(uint16_t screen_id, uint16_t control_id, uint8_t state) {
 	}/* END set1取消按钮 */
 
 	/* set2取消按钮 */
-	if (currentPage == PAGE_SET2 && control_id == 9) {
+	if (screen_id == PAGE_SET2 && control_id == 9) {
 		//跳转至load屏幕
 		//EE B1 00 00 01 FF FC FF FF
 		uint8_t temp5[9] = { 0xEE, 0xB1, 0x00, 0x00, 0x07, 0xFF, 0xFC, 0xFF,
@@ -851,7 +857,7 @@ void NotifyButton(uint16_t screen_id, uint16_t control_id, uint8_t state) {
 	}/* END set2取消按钮 */
 
 	/* set3取消按钮 */
-	if (currentPage == PAGE_SET3 && control_id == 9) {
+	if (screen_id == PAGE_SET3 && control_id == 9) {
 		//跳转至load屏幕
 		//EE B1 00 00 01 FF FC FF FF
 		uint8_t temp5[9] = { 0xEE, 0xB1, 0x00, 0x00, 0x07, 0xFF, 0xFC, 0xFF,
@@ -864,7 +870,7 @@ void NotifyButton(uint16_t screen_id, uint16_t control_id, uint8_t state) {
 	}/* END set3取消按钮 */
 
 	/* set4取消按钮 */
-	if (currentPage == PAGE_SET4 && control_id == 9) {
+	if (screen_id == PAGE_SET4 && control_id == 9) {
 		//跳转至load屏幕
 		//EE B1 00 00 01 FF FC FF FF
 		uint8_t temp5[9] = { 0xEE, 0xB1, 0x00, 0x00, 0x07, 0xFF, 0xFC, 0xFF,
@@ -877,7 +883,7 @@ void NotifyButton(uint16_t screen_id, uint16_t control_id, uint8_t state) {
 	}/* END set4取消按钮 */
 
 	/* Bluetooth取消按钮 */
-	if (currentPage == PAGE_BLUETOOTH && control_id == 4) {
+	if (screen_id == PAGE_BLUETOOTH && control_id == 4) {
 		//恢复至对应主屏幕
 		//EE B1 00 00 01 FF FC FF FF
 		uint8_t temp5[9] = { 0xEE, 0xB1, 0x00, 0x00, 0x01, 0xFF, 0xFC, 0xFF,
@@ -888,8 +894,7 @@ void NotifyButton(uint16_t screen_id, uint16_t control_id, uint8_t state) {
 	}/* END Bluetooth取消按钮 */
 
 	/* set1 & set2 确认按钮 */
-	if ((currentPage == PAGE_SET1 || currentPage == PAGE_SET2)
-			&& control_id == 8) {
+	if ((screen_id == PAGE_SET1 || screen_id == PAGE_SET2) && control_id == 8) {
 		//跳转至load屏幕
 		//EE B1 00 00 01 FF FC FF FF
 		uint8_t temp5[9] = { 0xEE, 0xB1, 0x00, 0x00, 0x07, 0xFF, 0xFC, 0xFF,
@@ -902,7 +907,7 @@ void NotifyButton(uint16_t screen_id, uint16_t control_id, uint8_t state) {
 		loadMainPage();
 	}/* END set1 & set2 确认按钮 */
 	/* set3 确认按钮 */
-	if (currentPage == PAGE_SET3 && control_id == 8) {
+	if (screen_id == PAGE_SET3 && control_id == 8) {
 		//跳转至load屏幕
 		//EE B1 00 00 01 FF FC FF FF
 		uint8_t temp5[9] = { 0xEE, 0xB1, 0x00, 0x00, 0x07, 0xFF, 0xFC, 0xFF,
@@ -915,7 +920,7 @@ void NotifyButton(uint16_t screen_id, uint16_t control_id, uint8_t state) {
 		loadMainPage();
 	}/* END set3取消按钮 */
 	/* set4 确认按钮 */
-	if (currentPage == PAGE_SET4 && control_id == 8) {
+	if (screen_id == PAGE_SET4 && control_id == 8) {
 		//跳转至load屏幕
 		//EE B1 00 00 01 FF FC FF FF
 		uint8_t temp5[9] = { 0xEE, 0xB1, 0x00, 0x00, 0x07, 0xFF, 0xFC, 0xFF,
@@ -1471,7 +1476,10 @@ void NotifySelector(uint16_t screen_id, uint16_t control_id, uint8_t item) {
 	}
 	/* 修改音量 */
 	if (screen_id == PAGE_SET2 && control_id == 5) {
-		saveData[0].modeIndex = item * 10;
+		saveData[0].volume = item * 5 + 50;
+		if (item == 0) {
+			saveData[0].volume = 0;
+		}
 	}
 }
 

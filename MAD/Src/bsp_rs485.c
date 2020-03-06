@@ -21,8 +21,6 @@
 
 #include "bsp_rs485.h"
 #include <stdio.h>
-//接收缓存区
-uint8_t RS485_RX_BUF[8];    //接收缓冲
 
 short ad_data[8];
 unsigned char real_modal_addr = 0x01;

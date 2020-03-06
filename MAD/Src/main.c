@@ -92,8 +92,7 @@ uint8_t Ver[23] = { 0xEE, 0xB1, 0x10, 0x00, 0x03, 0x00, 0x63, 0x56, 0x65, 0x72,
 /* LED片选 */
 long LED_Select = 0;
 /* RS485-RS232 参数 */
-extern uint8_t RS485_RX_BUF[8];
-unsigned char rom485[256];
+uint8_t RS485_RX_BUF[8];
 uint8_t BLUETOOTH_RX_BUF[CMD_MAX_SIZE];
 uint8_t RS232_RX_BUF[CMD_MAX_SIZE];
 extern DMA_HandleTypeDef hdma_usart2_rx;
@@ -318,6 +317,9 @@ int main(void) {
 	MX_TIM4_Init();
 
 	/* USER CODE BEGIN 2 */
+	HAL_NVIC_DisableIRQ(USART1_IRQn);
+	HAL_NVIC_DisableIRQ(USART2_IRQn);
+	HAL_NVIC_DisableIRQ(USART3_IRQn);
 	/* DEBUG 1 开始 */
 
 //  /* RS232 传输测试 */
@@ -564,19 +566,21 @@ void application(void) {
 	/* main 函数 while(1) 前，启动一次 DMA 接收 */
 	if (HAL_UART_Receive_DMA(&huart1, (uint8_t*) BLUETOOTH_RX_BUF,
 	CMD_MAX_SIZE) != HAL_OK) {
-		Error_Handler();
+//		Error_Handler();
 	}
 	if (HAL_UART_Receive_DMA(&huart2, (uint8_t*) RS232_RX_BUF,
 	CMD_MAX_SIZE) != HAL_OK) {
-		Error_Handler();
+//		Error_Handler();
 	}
 	if (HAL_UART_Receive_DMA(&huart3, (uint8_t*) RS485_RX_BUF, 8) != HAL_OK) {
-		Error_Handler();
+//		Error_Handler();
 	}
 	/* 开启串口空闲中断 */
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
 	__HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
 	__HAL_UART_ENABLE_IT(&huart3, UART_IT_IDLE);
+	HAL_NVIC_EnableIRQ(USART1_IRQn);
+	HAL_NVIC_EnableIRQ(USART2_IRQn);
 
 	/* 设置蓝牙 */
 	while (1) {
@@ -658,6 +662,7 @@ void application(void) {
 	HAL_UART_Transmit(&huart2, temp4, 7, SendTime);
 	/* 功能初始化 end */
 
+	HAL_NVIC_EnableIRQ(USART3_IRQn);
 	/* 正常工作 */
 	while (1) {
 		if (RS232_recvEndFlag == 1) {
@@ -747,23 +752,25 @@ void application(void) {
  * @历史版本 : V0.0.1 - Ethan - 2018/01/03
  */
 void eepromReadSetting(void) {
-//	HAL_NVIC_DisableIRQ(USART1_IRQn);
+	HAL_NVIC_DisableIRQ(USART1_IRQn);
 	HAL_NVIC_DisableIRQ(USART2_IRQn);
 	HAL_NVIC_DisableIRQ(USART3_IRQn);
 	HAL_NVIC_DisableIRQ(DMA1_Channel1_IRQn);
 	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 	HAL_NVIC_DisableIRQ(TIM2_IRQn);
+	HAL_NVIC_DisableIRQ(TIM4_IRQn);
 	HAL_Delay(1000);
 	SPI_Flash_WAKEUP();
-	SPI_FLASH_BufferRead((uint8_t*) &saveData, 0, 600);
+	SPI_FLASH_BufferRead((uint8_t*) &saveData, 0, 1000);
 	SPI_Flash_PowerDown();
 	HAL_Delay(1000);
-//	HAL_NVIC_EnableIRQ(USART1_IRQn);
+	HAL_NVIC_EnableIRQ(USART1_IRQn);
 	HAL_NVIC_EnableIRQ(USART2_IRQn);
 	HAL_NVIC_EnableIRQ(USART3_IRQn);
 	HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 	HAL_NVIC_EnableIRQ(TIM2_IRQn);
+	HAL_NVIC_EnableIRQ(TIM4_IRQn);
 }/* End eepromReadSetting() */
 
 /**
@@ -779,10 +786,11 @@ void eepromWriteSetting(void) {
 	HAL_NVIC_DisableIRQ(DMA1_Channel1_IRQn);
 	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 	HAL_NVIC_DisableIRQ(TIM2_IRQn);
+	HAL_NVIC_DisableIRQ(TIM4_IRQn);
 	HAL_Delay(1000);
 	SPI_Flash_WAKEUP();
 	SPI_FLASH_SectorErase(0);
-	SPI_FLASH_BufferWrite((uint8_t*) &saveData, 0, 600);
+	SPI_FLASH_BufferWrite((uint8_t*) &saveData, 0, 1000);
 	SPI_Flash_PowerDown();
 	HAL_Delay(1000);
 	HAL_NVIC_EnableIRQ(USART1_IRQn);
@@ -791,6 +799,7 @@ void eepromWriteSetting(void) {
 	HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 	HAL_NVIC_EnableIRQ(TIM2_IRQn);
+	HAL_NVIC_EnableIRQ(TIM4_IRQn);
 }/* End eepromWriteSetting() */
 
 /**
@@ -819,7 +828,7 @@ void loadMainPage(void) {
 	tempColor[9] = 0xFC;
 	tempColor[10] = 0xFF;
 	tempColor[11] = 0xFF;
-
+	alarm_off();
 	//跳转主画面1-1
 	if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
 			&& saveData[2].nameIndex == 21 && saveData[3].nameIndex == 21
@@ -1863,34 +1872,7 @@ void loadMainPage(void) {
 			0xFC, 0xFF, 0xFF };
 	HAL_UART_Transmit(&huart2, temp0, 12, SendTime);
 	HAL_Delay(200);
-	/* 设置音量 */
-//	HAL_Delay(500);
-//	Line_1A_WTN5(0xE0 + ((uint8_t) (saveData[0].volume * 1.5) & 0x0F)); //音量
-//	HAL_Delay(500);
-	/* 解除系统锁定 */
-	//EE 09 DE ED 13 31 FF FC FF FF
-	temp0[0] = 0xEE;
-	temp0[1] = 0x09;
-	temp0[2] = 0xDE;
-	temp0[3] = 0xED;
-	temp0[4] = 0x13;
-	temp0[5] = 0x31;
-	temp0[6] = 0xFC;
-	temp0[7] = 0xFF;
-	temp0[8] = 0xFF;
-	HAL_UART_Transmit(&huart2, temp0, 9, SendTime);
-	HAL_Delay(200);
-	/* 设置音量 */
-	//EE 93 00 FF FC FF FF
-	temp0[0] = 0xEE;
-	temp0[1] = 0x93;
-	temp0[2] = saveData[0].volume;
-	temp0[3] = 0xFF;
-	temp0[4] = 0xFC;
-	temp0[5] = 0xFF;
-	temp0[6] = 0xFF;
-	HAL_UART_Transmit(&huart2, temp0, 7, SendTime);
-	HAL_Delay(200);
+
 	set485rom(0);
 
 	huart3.Instance = USART3;
@@ -2127,10 +2109,20 @@ void selfTest(void) {
 //	uint8_t temp[12];
 	uint8_t tempAdcASCii[5];
 	uint8_t i;
-
+	uint8_t temp4[7];
 	/* 蜂鸣器报警 */
 	alarm_on();
-
+	//音量100
+	//EE 93 00 FF FC FF FF
+	temp4[0] = 0xEE;
+	temp4[1] = 0x93;
+	temp4[2] = 100;
+	temp4[3] = 0xFF;
+	temp4[4] = 0xFC;
+	temp4[5] = 0xFF;
+	temp4[6] = 0xFF;
+	HAL_UART_Transmit(&huart2, temp4, 7, SendTime);
+	HAL_Delay(200);
 	//EE 61 0F FF FC FF FF
 //	temp[0] = 0xEE;	//帧头
 //	temp[1] = 0x61;	//命令类型(UPDATE_CONTROL)
@@ -5755,6 +5747,8 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 	uint32_t temp;
 	/* RS485接收 */
 	if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_IDLE) != RESET) {
+		/* 开启串口2空闲中断 */
+		__HAL_UART_DISABLE_IT(&huart3, UART_IT_IDLE);
 		__HAL_UART_CLEAR_IDLEFLAG(&huart3);
 		HAL_UART_DMAStop(&huart3);
 
@@ -5774,12 +5768,13 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 		buffer[6] = (crc & 0xff00) >> 8;
 
 		// 判断地址与crc校验
+		// 成功后组合数据 计算 CRC 并发送。
+		// 获取数据
+		// 清空
 		if ((RS485_RX_BUF[0] == saveData[0].modbusAddr)
 				&& (RS485_RX_BUF[1] == 0x03)               //读取命令
 				&& (RS485_RX_BUF[6] == buffer[6])
-				&& (RS485_RX_BUF[7] == buffer[7])) { // 成功后组合数据 计算 CRC 并发送。
-													 // 获取数据
-													 // 清空
+				&& (RS485_RX_BUF[7] == buffer[7])) {
 			memset(send_mydata, 0, sizeof(send_mydata));
 			// 地址
 			send_mydata[0] = saveData[0].modbusAddr;       // 地址
@@ -5805,23 +5800,19 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 			crc = CRC16(send_mydata, i);
 			send_mydata[i] = (crc & 0xff00) >> 8;
 			send_mydata[i + 1] = crc & 0xff;
-
 			sendcount = i + 2;
-			RS485_TX_ON();         //发送使能
-//			for (i = 0; i < sendcount; i++)
-//				RS485_Send_Data(send_mydata, sizeof(send_mydata));
 			RS485_Send_Data(send_mydata, sendcount);
-			RS485_TX_OFF()
-			;
 		}
 		memset(RS485_RX_BUF, 0xFF, sizeof(RS485_RX_BUF));
 		if (HAL_UART_Receive_DMA(&huart3, (uint8_t*) RS485_RX_BUF, 8)
 				!= HAL_OK) {
 //			Error_Handler();
 		}
+		__HAL_UART_ENABLE_IT(&huart3, UART_IT_IDLE);
 	}
 	/* 串口屏接收 */
 	if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE) != RESET) {
+		__HAL_UART_DISABLE_IT(&huart2, UART_IT_IDLE);
 		__HAL_UART_CLEAR_IDLEFLAG(&huart2);
 		HAL_UART_DMAStop(&huart2);
 
@@ -5833,6 +5824,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 	}
 	/* 蓝牙接收 */
 	if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE) != RESET) {
+		__HAL_UART_DISABLE_IT(&huart1, UART_IT_IDLE);
 		__HAL_UART_CLEAR_IDLEFLAG(&huart1);
 		HAL_UART_DMAStop(&huart1);
 		/* 未连接蓝牙 */
@@ -5999,7 +5991,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				record_add = BLUETOOTH_RX_BUF[2] << 8 | BLUETOOTH_RX_BUF[3]; //组合为复合地址
 				if (record_add > 256)
 					record_add = 256;
-				record_num = BLUETOOTH_RX_BUF[5] * 2; //组合为数据长度＠├┱阔啊站 看扩展为2倍 数量�
+				record_num = BLUETOOTH_RX_BUF[6]; //组合为数据长度＠├┱阔啊站 看扩展为2倍 数量�
 				if (record_num > 128)
 					record_num = 128;
 				//复制设置到rom485
@@ -6111,9 +6103,14 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				}
 				//刷新界面
 				if (BLUETOOTH_RX_BUF[3] == 0x03) {
+					//跳转至load屏幕
+					//EE B1 00 00 01 FF FC FF FF
+					uint8_t temp5[9] = { 0xEE, 0xB1, 0x00, 0x00, 0x07, 0xFF,
+							0xFC, 0xFF, 0xFF };
+					HAL_UART_Transmit(&huart2, temp5, 9, SendTime);
 					read485rom(0);
 					eepromWriteSetting();
-					testFlag = 1;
+					loadMainPage();
 				}
 				//清空
 				memset(send_mydata, 0, sizeof(send_mydata));
@@ -6130,11 +6127,11 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				send_mydata[7] = crc & 0xff;
 
 				HAL_UART_Transmit(&huart1, send_mydata, 8, SendTime);
-			}
+			}/* 按钮命令结尾 */
 			memset(BLUETOOTH_RX_BUF, 0xFF, sizeof(BLUETOOTH_RX_BUF));
 			if (HAL_UART_Receive_DMA(&huart1, (uint8_t*) BLUETOOTH_RX_BUF,
 			CMD_MAX_SIZE) != HAL_OK) {
-				Error_Handler();
+				//Error_Handler();
 			}
 			/* 开启串口空闲中断 */
 			__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
@@ -6967,6 +6964,30 @@ void alarm_on(void) //播放声音
 //		HAL_Delay(50);
 //	}
 	uint8_t temp[10];
+//	/* 解除系统锁定 */
+//	//EE 09 DE ED 13 31 FF FC FF FF
+//	temp[0] = 0xEE;
+//	temp[1] = 0x09;
+//	temp[2] = 0xDE;
+//	temp[3] = 0xED;
+//	temp[4] = 0x13;
+//	temp[5] = 0x31;
+//	temp[6] = 0xFC;
+//	temp[7] = 0xFF;
+//	temp[8] = 0xFF;
+//	HAL_UART_Transmit(&huart2, temp, 9, SendTime);
+//	HAL_Delay(200);
+	/* 设置音量 */
+	//EE 93 00 FF FC FF FF
+	temp[0] = 0xEE;
+	temp[1] = 0x93;
+	temp[2] = saveData[0].volume;
+	temp[3] = 0xFF;
+	temp[4] = 0xFC;
+	temp[5] = 0xFF;
+	temp[6] = 0xFF;
+	HAL_UART_Transmit(&huart2, temp, 7, SendTime);
+	HAL_Delay(200);
 //EE 90 01 00 02 00 FF FC FF FF
 	temp[0] = 0xEE;	//帧头
 	temp[1] = 0x90;	//命令类型(UPDATE_CONTROL)
