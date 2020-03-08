@@ -6116,7 +6116,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				memset(send_mydata, 0, sizeof(send_mydata));
 
 				send_mydata[0] = 0xFF;         //地址
-				send_mydata[1] = 0x10;         // 功能码
+				send_mydata[1] = 0x06;         // 功能码
 				send_mydata[2] = BLUETOOTH_RX_BUF[2];	//起始寄存器地址
 				send_mydata[3] = BLUETOOTH_RX_BUF[3];
 				send_mydata[4] = BLUETOOTH_RX_BUF[4];
