@@ -5753,7 +5753,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 		HAL_UART_DMAStop(&huart3);
 
 		unsigned char buffer[8];
-		uint8_t send_mydata[200];
+		uint8_t send_mydata[256];
 		unsigned short crc;
 		unsigned char i, sendcount;
 		unsigned int record_num, record_add;
@@ -5782,8 +5782,8 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 			send_mydata[2] = RS485_RX_BUF[5] << 1;         // 寄存器个数乘以二
 
 			record_add = RS485_RX_BUF[2] << 8 | RS485_RX_BUF[3];   //组合为复合地址
-			if (record_add > 256)
-				record_add = 256;
+			if (record_add > 100)
+				record_add = 100;
 			if (record_add <= 0)
 				record_add = 1;
 			record_num = RS485_RX_BUF[5] * 2;     //组合为数据长度＠├┱阔啊站 看扩展为2倍 数量�
@@ -5866,8 +5866,8 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				send_mydata[2] = BLUETOOTH_RX_BUF[5] << 1;       // 寄存器个数乘以二
 
 				record_add = BLUETOOTH_RX_BUF[2] << 8 | BLUETOOTH_RX_BUF[3]; //组合为复合地址
-				if (record_add > 256)
-					record_add = 256;
+				if (record_add > 100)
+					record_add = 100;
 				if (record_add <= 0)
 					record_add = 1;
 				record_num = BLUETOOTH_RX_BUF[5] * 2; //组合为数据长度＠├┱阔啊站 看扩展为2倍 数量�
@@ -5994,13 +5994,13 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 					&& (BLUETOOTH_RX_BUF[BLUETOOTH_RX_BUF[6] + 8] == buffer[7])) { // 成功后组合数据 计算 CRC 并发送。
 
 				record_add = BLUETOOTH_RX_BUF[2] << 8 | BLUETOOTH_RX_BUF[3]; //组合为复合地址
-				if (record_add > 256)
-					record_add = 256;
+				if (record_add > 100)
+					record_add = 100;
 				if (record_add <= 0)
 					record_add = 1;
 				record_num = BLUETOOTH_RX_BUF[6]; //组合为数据长度＠├┱阔啊站 看扩展为2倍 数量�
-				if (record_num > 128)
-					record_num = 128;
+				if (record_num > 200)
+					record_num = 200;
 				//复制设置到rom485
 				memcpy(&rom485[record_add * 2 - 2], (&BLUETOOTH_RX_BUF[7]),
 						record_num); //加一大段数据
@@ -6479,6 +6479,7 @@ void set485rom(uint8_t func) {
 
 		rom485[40] = 0;  //出厂字节2
 		rom485[41] = 0;
+
 		rom485[42] = 0;  //气体索引2
 		rom485[43] = saveData[1].nameIndex;
 
@@ -6488,22 +6489,23 @@ void set485rom(uint8_t func) {
 		rom485[62] = 0;  //气体索引3
 		rom485[63] = saveData[2].nameIndex;
 
-		rom485[120] = 0;  //出厂字节1
-		rom485[121] = 0;
+		rom485[118] = 0;  //出厂字节1
+		rom485[119] = 0;
 
-		rom485[122] = 0;  //气体索引1
-		rom485[123] = saveData[3].nameIndex;
+		rom485[120] = 0;  //气体索引1
+		rom485[121] = saveData[3].nameIndex;
 
-		rom485[140] = 0;  //出厂字节2
-		rom485[141] = 0;
-		rom485[142] = 0;  //气体索引2
-		rom485[143] = saveData[4].nameIndex;
+		rom485[138] = 0;  //出厂字节2
+		rom485[139] = 0;
 
-		rom485[160] = 0;  //出厂字节3
-		rom485[161] = 0;
+		rom485[140] = 0;  //气体索引2
+		rom485[141] = saveData[4].nameIndex;
 
-		rom485[162] = 0;  //气体索引3
-		rom485[163] = saveData[5].nameIndex;
+		rom485[158] = 0;  //出厂字节3
+		rom485[159] = 0;
+
+		rom485[160] = 0;  //气体索引3
+		rom485[161] = saveData[5].nameIndex;
 
 		j = 24;
 		if (saveData[0].rangeIndex != 3) {
@@ -6563,7 +6565,7 @@ void set485rom(uint8_t func) {
 		rom485[60] = saveData[1].rangeIndex;
 		rom485[80] = saveData[2].rangeIndex;
 
-		j = 124;
+		j = 122;
 		if (saveData[3].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[3].upper_limit, 8);        //上下限1
 		} else {
@@ -6572,7 +6574,7 @@ void set485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 
-		j = 128;
+		j = 126;
 		if (saveData[3].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[3].lower_limit, 8);        //上下限1
 		} else {
@@ -6581,7 +6583,7 @@ void set485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 
-		j = 144;
+		j = 142;
 		if (saveData[4].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[4].upper_limit, 8);        //上下限2
 		} else {
@@ -6590,7 +6592,7 @@ void set485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 
-		j = 148;
+		j = 146;
 		if (saveData[4].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[4].lower_limit, 8);        //上下限2
 		} else {
@@ -6599,7 +6601,7 @@ void set485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 
-		j = 164;
+		j = 162;
 		if (saveData[5].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[5].upper_limit, 8);        //上下限3
 		} else {
@@ -6608,7 +6610,7 @@ void set485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 
-		j = 168;
+		j = 166;
 		if (saveData[5].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[5].lower_limit, 8);        //上下限3
 		} else {
@@ -6620,24 +6622,24 @@ void set485rom(uint8_t func) {
 		rom485[38] = saveData[0].rangeIndex;
 		rom485[58] = saveData[1].rangeIndex;
 		rom485[78] = saveData[2].rangeIndex;
-		rom485[138] = saveData[3].rangeIndex;
-		rom485[158] = saveData[4].rangeIndex;
-		rom485[178] = saveData[5].rangeIndex;
+		rom485[136] = saveData[3].rangeIndex;
+		rom485[156] = saveData[4].rangeIndex;
+		rom485[176] = saveData[5].rangeIndex;
 	}
 
 	rom485[4] = 0;		//报警1
-	rom485[5] = (ledFlag[0] == 1 ? 0 : 1);
+	rom485[5] = (ledFlag[0] == 0 ? 0 : 1);
 	rom485[6] = 0;		//报警2
-	rom485[7] = (ledFlag[1] == 1 ? 0 : 1);
+	rom485[7] = (ledFlag[1] == 0 ? 0 : 1);
 	rom485[8] = 0;		//报警3
-	rom485[9] = (ledFlag[2] == 1 ? 0 : 1);
+	rom485[9] = (ledFlag[2] == 0 ? 0 : 1);
 
-	rom485[104] = 0;	//报警4
-	rom485[105] = (ledFlag[3] == 1 ? 0 : 1);
-	rom485[106] = 0;	//报警5
-	rom485[107] = (ledFlag[4] == 1 ? 0 : 1);
-	rom485[108] = 0;	//报警6
-	rom485[109] = (ledFlag[5] == 1 ? 0 : 1);
+	rom485[102] = 0;	//报警4
+	rom485[103] = (ledFlag[3] == 0 ? 0 : 1);
+	rom485[104] = 0;	//报警5
+	rom485[105] = (ledFlag[4] == 0 ? 0 : 1);
+	rom485[106] = 0;	//报警6
+	rom485[107] = (ledFlag[5] == 0 ? 0 : 1);
 
 	rom485[10] = 0; //静音状态
 	rom485[11] = muteFlag[0] || muteFlag[1] || muteFlag[2] || muteFlag[3]
@@ -6700,7 +6702,7 @@ void set485rom(uint8_t func) {
 		break;
 	}
 
-	j = 137;          // 使用8位寄存器作为状态存储量
+	j = 135;          // 使用8位寄存器作为状态存储量
 	switch (ledFlag[3]) {
 	case 0:
 		rom485[j] = 0x00;
@@ -6719,7 +6721,7 @@ void set485rom(uint8_t func) {
 		break;
 	}
 
-	j = 157;
+	j = 155;
 	switch (ledFlag[4]) {
 	case 0:
 		rom485[j] = 0x00;
@@ -6738,7 +6740,7 @@ void set485rom(uint8_t func) {
 		break;
 	}
 
-	j = 177;
+	j = 175;
 	switch (ledFlag[5]) {
 	case 0:
 		rom485[j] = 0x00;
@@ -6766,13 +6768,13 @@ void set485rom(uint8_t func) {
 	memcpy((&rom485[72]), &float_ADCValue[2], 4);
 	change_float_big_485rom(72);
 
-	memcpy((&rom485[132]), &float_ADCValue[3], 4);
+	memcpy((&rom485[130]), &float_ADCValue[3], 4);
 	change_float_big_485rom(132);
 
-	memcpy((&rom485[152]), &float_ADCValue[4], 4);
+	memcpy((&rom485[150]), &float_ADCValue[4], 4);
 	change_float_big_485rom(152);
 
-	memcpy((&rom485[172]), &float_ADCValue[5], 4);
+	memcpy((&rom485[170]), &float_ADCValue[5], 4);
 	change_float_big_485rom(172);
 }
 
@@ -6810,12 +6812,12 @@ void read485rom(uint8_t func) {
 		saveData[1].rangeIndex = rom485[59];
 		saveData[2].rangeIndex = rom485[79];
 
-		saveData[3].nameIndex = rom485[123];
-		saveData[4].nameIndex = rom485[143];
-		saveData[5].nameIndex = rom485[163];
-		saveData[3].rangeIndex = rom485[139];
-		saveData[4].rangeIndex = rom485[159];
-		saveData[5].rangeIndex = rom485[179];
+		saveData[3].nameIndex = rom485[121];
+		saveData[4].nameIndex = rom485[141];
+		saveData[5].nameIndex = rom485[161];
+		saveData[3].rangeIndex = rom485[137];
+		saveData[4].rangeIndex = rom485[157];
+		saveData[5].rangeIndex = rom485[177];
 
 		j = 24;
 		change_float_big_485rom(j);
@@ -6867,7 +6869,7 @@ void read485rom(uint8_t func) {
 			memcpy(&saveData[2].upper_limit, (&rom485[j]), 8);        //上下限3
 		}
 
-		j = 124;
+		j = 122;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[3].rangeIndex != 3) {
@@ -6875,7 +6877,7 @@ void read485rom(uint8_t func) {
 		} else {
 			memcpy(&saveData[3].lower_limit, (&rom485[j]), 8);        //上下限1
 		}
-		j = 128;
+		j = 126;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[3].rangeIndex != 3) {
@@ -6884,7 +6886,7 @@ void read485rom(uint8_t func) {
 			memcpy(&saveData[3].upper_limit, (&rom485[j]), 8);        //上下限1
 		}
 
-		j = 144;
+		j = 142;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[4].rangeIndex != 3) {
@@ -6892,7 +6894,7 @@ void read485rom(uint8_t func) {
 		} else {
 			memcpy(&saveData[4].lower_limit, (&rom485[j]), 8);        //上下限2
 		}
-		j = 148;
+		j = 146;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[4].rangeIndex != 3) {
@@ -6900,7 +6902,7 @@ void read485rom(uint8_t func) {
 		} else {
 			memcpy(&saveData[4].upper_limit, (&rom485[j]), 8);        //上下限2
 		}
-		j = 164;
+		j = 162;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[5].rangeIndex != 3) {
@@ -6908,7 +6910,7 @@ void read485rom(uint8_t func) {
 		} else {
 			memcpy(&saveData[5].lower_limit, (&rom485[j]), 8);        //上下限3
 		}
-		j = 168;
+		j = 166;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[5].rangeIndex != 3) {
