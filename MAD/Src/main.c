@@ -72,7 +72,8 @@ PUTCHAR_PROTOTYPE {
 	HAL_UART_Transmit(&huart3, (uint8_t*) &ch, 1, 0x000F);
 	return ch;
 }
-
+/* 气体总数 判断名称是否超量程 */
+#define TOTALNUM 27
 #define CMD_MAX_SIZE 60
 #define SELFTESTTIME 1000
 /* 板子基准电压 */
@@ -205,7 +206,7 @@ uint8_t testFlag = 0;
 
 /* 设置蓝牙标志 */
 uint8_t bluetoothFlag = 0;
-
+uint8_t bluetoothRefreshFlag = 0;
 #define ADC_NUMOFCHANNEL 6
 /* AD转换结果值 */
 uint8_t ADCFlag = 0;
@@ -274,6 +275,7 @@ void alarm_off(void);
 void getCurrentPage(void);
 void checkLic(void);
 void setBluetooth(void);
+void connectBluetooth(void);
 void bsp_Delay_Nus(uint16_t time);
 
 /* USER CODE END PFP */
@@ -582,87 +584,25 @@ void application(void) {
 	HAL_NVIC_EnableIRQ(USART1_IRQn);
 	HAL_NVIC_EnableIRQ(USART2_IRQn);
 
-	/* 设置蓝牙 */
-	while (1) {
-		if (bluetoothFlag == 1) {
-			if (BLUETOOTH_RX_BUF[0] == 'O' && BLUETOOTH_RX_BUF[1] == 'K'
-					&& BLUETOOTH_RX_BUF[2] == '+' && BLUETOOTH_RX_BUF[3] == 'L'
-					&& BLUETOOTH_RX_BUF[4] == 'A' && BLUETOOTH_RX_BUF[5] == 'D'
-					&& BLUETOOTH_RX_BUF[6] == 'D'
-					&& BLUETOOTH_RX_BUF[7] == ':') {
-				uint8_t i = 0;
+	connectBluetooth();
 
-				/* 设置蓝牙NAME */
-				//蓝牙界面文本
-				//EE B1 10 00 0E 00 03 30 30 31 37 45 41 30 39 32 33 41 45 FF FC FF FF
-				uint8_t temp[23] = { 0xEE, 0xB1, 0x10, 0x00, 0x0E, 0x00, 0x03,
-						0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-						0x00, 0x00, 0x00, 0xFF, 0xFC, 0xFF, 0xFF };
-				//蓝牙界面二维码
-				//EE B1 10 00 0E 00 01 30 30 31 37 45 41 30 39 32 33 41 45 FF FC FF FF
-				uint8_t setBluetoothName[19] = { 'A', 'T', '+', 'N', 'A', 'M',
-						'E', 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-						0x00, 0x00, 0x0D, 0x0A };
-				for (i = 0; i < 12; i++) {
-					setBluetoothName[i + 7] = BLUETOOTH_RX_BUF[i + 10];
-					temp[i + 7] = BLUETOOTH_RX_BUF[i + 8];
-				}
-				HAL_UART_Transmit(&huart1, setBluetoothName, 19, SendTime);
-				//设置蓝牙界面文本
-				HAL_UART_Transmit(&huart2, temp, 23, SendTime);
-				//设置蓝牙界面二维码
-				temp[6] = 0x01;
-				HAL_UART_Transmit(&huart2, temp, 23, SendTime);
-				bluetoothFlag = 2;
-				memset(BLUETOOTH_RX_BUF, 0xFF, sizeof(BLUETOOTH_RX_BUF));
-				if (HAL_UART_Receive_DMA(&huart1, (uint8_t*) BLUETOOTH_RX_BUF,
-				CMD_MAX_SIZE) != HAL_OK) {
-					Error_Handler();
-				}
-				/* 开启串口空闲中断 */
-				__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
-				break;
-			} else {
-				memset(BLUETOOTH_RX_BUF, 0xFF, sizeof(BLUETOOTH_RX_BUF));
-				HAL_UART_Receive_DMA(&huart1, (uint8_t*) BLUETOOTH_RX_BUF,
-				CMD_MAX_SIZE);
-				/* 开启串口空闲中断 */
-				__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
-				setBluetooth();
-				HAL_Delay(1000);
-				bluetoothFlag = 0;
-			}
-		} else {
-			//currentTime - 等待蓝牙芯片响应时间
-			if (currentTime > 20) {
-				bluetoothFlag = 0;
-				memset(BLUETOOTH_RX_BUF, 0xFF, sizeof(BLUETOOTH_RX_BUF));
-				if (HAL_UART_Receive_DMA(&huart1, (uint8_t*) BLUETOOTH_RX_BUF,
-				CMD_MAX_SIZE) != HAL_OK) {
-					//TODO加入蓝牙芯片后开启
-					//Error_Handler();
-				}
-				/* 开启串口空闲中断 */
-				__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
-				break;
-			}
-			setBluetooth();
-			HAL_Delay(1000);
-		}
-	}/* End 设置蓝牙 */
 	/* 启动检查画面 */
 	uint8_t temp4[9];
 	temp4[0] = 0xEE;  			//帧头
-	temp4[1] = 0xB1;				//命令类型(UPDATE_CONTROL)
+	temp4[1] = 0xB1;			//命令类型(UPDATE_CONTROL)
 	temp4[2] = 0x01;
 	temp4[3] = 0xFF;   			//帧尾
 	temp4[4] = 0xFC;
 	temp4[5] = 0xFF;
 	temp4[6] = 0xFF;
+
 	HAL_UART_Transmit(&huart2, temp4, 7, SendTime);
-	/* 功能初始化 end */
+	HAL_Delay(1000);
+	HAL_UART_Transmit(&huart2, temp4, 7, SendTime);
 
 	HAL_NVIC_EnableIRQ(USART3_IRQn);
+	/* 功能初始化 end */
+
 	/* 正常工作 */
 	while (1) {
 		if (RS232_recvEndFlag == 1) {
@@ -741,6 +681,12 @@ void application(void) {
 		if (getUIFlag == 1) {
 			getCurrentPage();
 			getUIFlag = 2;
+			if (bluetoothFlag == 0) {
+				connectBluetooth();
+			}
+		}
+		if (bluetoothRefreshFlag == 1) {
+			loadMainPage();
 		}
 	}
 } /* End application() */
@@ -2004,7 +1950,7 @@ void loadMainPage(void) {
 	HAL_UART_Transmit(&huart2, temp, 9, SendTime);
 	lastPage = currentPage;
 	currentPage = mainpage;
-
+	bluetoothRefreshFlag = 0;
 }/* End loadMainPage() */
 
 /**
@@ -2021,7 +1967,7 @@ void factorySetting(uint8_t permisson) {
 		saveData[i].rangeIndex = 0;
 		saveData[i].K = 1;
 		saveData[i].zero = 0;
-		saveData[i].nameIndex = 20;
+		saveData[i].nameIndex = 21;
 	}
 	for (i = 0; i < 6; i++) {
 		val_20mA[i] = 1;
@@ -2106,6 +2052,8 @@ void factorySetting(uint8_t permisson) {
  * @历史版本 : V0.0.1 - Ethan - 2018/01/03
  */
 void selfTest(void) {
+	HAL_NVIC_DisableIRQ(USART1_IRQn);
+	HAL_NVIC_DisableIRQ(USART3_IRQn);
 //	uint8_t temp[12];
 	uint8_t tempAdcASCii[5];
 	uint8_t i;
@@ -2627,6 +2575,8 @@ void selfTest(void) {
 	/* 加载主界面设置 */
 	loadMainPage();
 	testFlag = 0;
+	HAL_NVIC_EnableIRQ(USART1_IRQn);
+	HAL_NVIC_EnableIRQ(USART3_IRQn);
 }
 
 /**
@@ -5734,9 +5684,9 @@ void updateLed(int8_t select) {
  * 返 回 值: 无
  * 说    明: 无
  */
-//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *uartHandle) {
-//
-//}
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *uartHandle) {
+
+}
 /**
  * 函数功能: 串口空闲中断服务函数
  * 输入参数: uartHandle：串口号
@@ -5782,19 +5732,19 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 			send_mydata[2] = RS485_RX_BUF[5] << 1;         // 寄存器个数乘以二
 
 			record_add = RS485_RX_BUF[2] << 8 | RS485_RX_BUF[3];   //组合为复合地址
-			if (record_add > 100)
-				record_add = 100;
-			if (record_add <= 0)
-				record_add = 1;
+//			if (record_add > 100)
+//				record_add = 100;
+//			if (record_add <= 0)
+//				record_add = 1;
 			record_num = RS485_RX_BUF[5] * 2;     //组合为数据长度＠├┱阔啊站 看扩展为2倍 数量�
-			if (record_num > 200)
-				record_num = 200;
+			if (record_num > 256)
+				record_num = 256;
 
 			// rom485[61]//=rom485[81];
 			// rom485[63]//=rom485[83];
 			// 修改真空报警状态， 上下报警互换
 
-			memcpy((&send_mydata[3]), &rom485[record_add * 2 - 2], record_num); //加一大段数据
+			memcpy((&send_mydata[3]), &rom485[record_add * 2], record_num); //加一大段数据
 			i = record_num + 3;
 
 			// 添加校验码 modscan 高位在前
@@ -5866,10 +5816,10 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				send_mydata[2] = BLUETOOTH_RX_BUF[5] << 1;       // 寄存器个数乘以二
 
 				record_add = BLUETOOTH_RX_BUF[2] << 8 | BLUETOOTH_RX_BUF[3]; //组合为复合地址
-				if (record_add > 100)
-					record_add = 100;
-				if (record_add <= 0)
-					record_add = 1;
+//				if (record_add > 100)
+//					record_add = 100;
+//				if (record_add <= 0)
+//					record_add = 1;
 				record_num = BLUETOOTH_RX_BUF[5] * 2; //组合为数据长度＠├┱阔啊站 看扩展为2倍 数量�
 				if (record_num > 200)
 					record_num = 200;
@@ -5877,8 +5827,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				//  rom485[63]//=rom485[83];
 				//修改真空报警状态， 上下报警互换
 
-				memcpy((&send_mydata[3]), &rom485[record_add * 2 - 2],
-						record_num); //加一大段数据
+				memcpy((&send_mydata[3]), &rom485[record_add * 2], record_num); //加一大段数据
 				i = record_num + 3;
 
 				//添加校验码   modscan 高位在前
@@ -6002,7 +5951,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				if (record_num > 200)
 					record_num = 200;
 				//复制设置到rom485
-				memcpy(&rom485[record_add * 2 - 2], (&BLUETOOTH_RX_BUF[7]),
+				memcpy(&rom485[record_add * 2], (&BLUETOOTH_RX_BUF[7]),
 						record_num); //加一大段数据
 
 				//清空
@@ -6117,7 +6066,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 					HAL_UART_Transmit(&huart2, temp5, 9, SendTime);
 					read485rom(0);
 					eepromWriteSetting();
-					loadMainPage();
+					bluetoothRefreshFlag = 1;
 				}
 				//清空
 				memset(send_mydata, 0, sizeof(send_mydata));
@@ -6445,7 +6394,7 @@ float StrToFloat(uint8_t *buf) {
 }
 
 void set485rom(uint8_t func) {
-	uint8_t j;
+	uint16_t j;
 	if (func == 0) {
 
 		unsigned int bautrate = 0;
@@ -6489,23 +6438,23 @@ void set485rom(uint8_t func) {
 		rom485[62] = 0;  //气体索引3
 		rom485[63] = saveData[2].nameIndex;
 
-		rom485[118] = 0;  //出厂字节1
-		rom485[119] = 0;
+		rom485[120] = 0;  //出厂字节1
+		rom485[121] = 0;
 
-		rom485[120] = 0;  //气体索引1
-		rom485[121] = saveData[3].nameIndex;
+		rom485[122] = 0;  //气体索引1
+		rom485[123] = saveData[3].nameIndex;
 
-		rom485[138] = 0;  //出厂字节2
-		rom485[139] = 0;
+		rom485[140] = 0;  //出厂字节2
+		rom485[141] = 0;
 
-		rom485[140] = 0;  //气体索引2
-		rom485[141] = saveData[4].nameIndex;
+		rom485[142] = 0;  //气体索引2
+		rom485[143] = saveData[4].nameIndex;
 
-		rom485[158] = 0;  //出厂字节3
-		rom485[159] = 0;
+		rom485[160] = 0;  //出厂字节3
+		rom485[161] = 0;
 
-		rom485[160] = 0;  //气体索引3
-		rom485[161] = saveData[5].nameIndex;
+		rom485[162] = 0;  //气体索引3
+		rom485[163] = saveData[5].nameIndex;
 
 		j = 24;
 		if (saveData[0].rangeIndex != 3) {
@@ -6560,12 +6509,8 @@ void set485rom(uint8_t func) {
 		}
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
-		/* 测量范围索引 */
-		rom485[40] = saveData[0].rangeIndex;
-		rom485[60] = saveData[1].rangeIndex;
-		rom485[80] = saveData[2].rangeIndex;
 
-		j = 122;
+		j = 124;
 		if (saveData[3].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[3].upper_limit, 8);        //上下限1
 		} else {
@@ -6574,7 +6519,7 @@ void set485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 
-		j = 126;
+		j = 128;
 		if (saveData[3].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[3].lower_limit, 8);        //上下限1
 		} else {
@@ -6583,7 +6528,7 @@ void set485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 
-		j = 142;
+		j = 144;
 		if (saveData[4].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[4].upper_limit, 8);        //上下限2
 		} else {
@@ -6592,7 +6537,7 @@ void set485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 
-		j = 146;
+		j = 148;
 		if (saveData[4].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[4].lower_limit, 8);        //上下限2
 		} else {
@@ -6601,7 +6546,7 @@ void set485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 
-		j = 162;
+		j = 164;
 		if (saveData[5].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[5].upper_limit, 8);        //上下限3
 		} else {
@@ -6610,7 +6555,7 @@ void set485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 
-		j = 166;
+		j = 168;
 		if (saveData[5].rangeIndex != 3) {
 			memcpy((&rom485[j]), &saveData[5].lower_limit, 8);        //上下限3
 		} else {
@@ -6622,9 +6567,9 @@ void set485rom(uint8_t func) {
 		rom485[38] = saveData[0].rangeIndex;
 		rom485[58] = saveData[1].rangeIndex;
 		rom485[78] = saveData[2].rangeIndex;
-		rom485[136] = saveData[3].rangeIndex;
-		rom485[156] = saveData[4].rangeIndex;
-		rom485[176] = saveData[5].rangeIndex;
+		rom485[138] = saveData[3].rangeIndex;
+		rom485[158] = saveData[4].rangeIndex;
+		rom485[178] = saveData[5].rangeIndex;
 	}
 
 	rom485[4] = 0;		//报警1
@@ -6634,12 +6579,12 @@ void set485rom(uint8_t func) {
 	rom485[8] = 0;		//报警3
 	rom485[9] = (ledFlag[2] == 0 ? 0 : 1);
 
-	rom485[102] = 0;	//报警4
-	rom485[103] = (ledFlag[3] == 0 ? 0 : 1);
-	rom485[104] = 0;	//报警5
-	rom485[105] = (ledFlag[4] == 0 ? 0 : 1);
-	rom485[106] = 0;	//报警6
-	rom485[107] = (ledFlag[5] == 0 ? 0 : 1);
+	rom485[104] = 0;	//报警4
+	rom485[105] = (ledFlag[3] == 0 ? 0 : 1);
+	rom485[106] = 0;	//报警5
+	rom485[107] = (ledFlag[4] == 0 ? 0 : 1);
+	rom485[108] = 0;	//报警6
+	rom485[109] = (ledFlag[5] == 0 ? 0 : 1);
 
 	rom485[10] = 0; //静音状态
 	rom485[11] = muteFlag[0] || muteFlag[1] || muteFlag[2] || muteFlag[3]
@@ -6702,7 +6647,7 @@ void set485rom(uint8_t func) {
 		break;
 	}
 
-	j = 135;          // 使用8位寄存器作为状态存储量
+	j = 137;          // 使用8位寄存器作为状态存储量
 	switch (ledFlag[3]) {
 	case 0:
 		rom485[j] = 0x00;
@@ -6721,7 +6666,7 @@ void set485rom(uint8_t func) {
 		break;
 	}
 
-	j = 155;
+	j = 157;
 	switch (ledFlag[4]) {
 	case 0:
 		rom485[j] = 0x00;
@@ -6740,7 +6685,7 @@ void set485rom(uint8_t func) {
 		break;
 	}
 
-	j = 175;
+	j = 177;
 	switch (ledFlag[5]) {
 	case 0:
 		rom485[j] = 0x00;
@@ -6768,18 +6713,18 @@ void set485rom(uint8_t func) {
 	memcpy((&rom485[72]), &float_ADCValue[2], 4);
 	change_float_big_485rom(72);
 
-	memcpy((&rom485[130]), &float_ADCValue[3], 4);
-	change_float_big_485rom(132);
+	memcpy((&rom485[132]), &float_ADCValue[3], 4);
+	change_float_big_485rom(130);
 
-	memcpy((&rom485[150]), &float_ADCValue[4], 4);
-	change_float_big_485rom(152);
+	memcpy((&rom485[152]), &float_ADCValue[4], 4);
+	change_float_big_485rom(150);
 
-	memcpy((&rom485[170]), &float_ADCValue[5], 4);
-	change_float_big_485rom(172);
+	memcpy((&rom485[172]), &float_ADCValue[5], 4);
+	change_float_big_485rom(170);
 }
 
 void read485rom(uint8_t func) {
-	uint8_t j;
+	uint16_t j;
 	if (func == 0) {
 
 		unsigned int bautrate = 0;
@@ -6805,19 +6750,37 @@ void read485rom(uint8_t func) {
 			break;
 		}
 
-		saveData[0].nameIndex = rom485[23];
-		saveData[1].nameIndex = rom485[43];
-		saveData[2].nameIndex = rom485[63];
-		saveData[0].rangeIndex = rom485[39];
-		saveData[1].rangeIndex = rom485[59];
-		saveData[2].rangeIndex = rom485[79];
+		saveData[0].nameIndex = rom485[25];
+		saveData[1].nameIndex = rom485[45];
+		saveData[2].nameIndex = rom485[65];
+		saveData[0].rangeIndex = rom485[41];
+		saveData[1].rangeIndex = rom485[61];
+		saveData[2].rangeIndex = rom485[81];
 
-		saveData[3].nameIndex = rom485[121];
-		saveData[4].nameIndex = rom485[141];
-		saveData[5].nameIndex = rom485[161];
-		saveData[3].rangeIndex = rom485[137];
-		saveData[4].rangeIndex = rom485[157];
-		saveData[5].rangeIndex = rom485[177];
+		saveData[3].nameIndex = rom485[125];
+		saveData[4].nameIndex = rom485[145];
+		saveData[5].nameIndex = rom485[165];
+		saveData[3].rangeIndex = rom485[141];
+		saveData[4].rangeIndex = rom485[161];
+		saveData[5].rangeIndex = rom485[181];
+		if (saveData[0].nameIndex > TOTALNUM) {
+			saveData[0].nameIndex = 21;
+		}
+		if (saveData[1].nameIndex > TOTALNUM) {
+			saveData[1].nameIndex = 21;
+		}
+		if (saveData[2].nameIndex > TOTALNUM) {
+			saveData[2].nameIndex = 21;
+		}
+		if (saveData[3].nameIndex > TOTALNUM) {
+			saveData[3].nameIndex = 21;
+		}
+		if (saveData[4].nameIndex > TOTALNUM) {
+			saveData[4].nameIndex = 21;
+		}
+		if (saveData[5].nameIndex > TOTALNUM) {
+			saveData[6].nameIndex = 21;
+		}
 
 		j = 24;
 		change_float_big_485rom(j);
@@ -6869,7 +6832,7 @@ void read485rom(uint8_t func) {
 			memcpy(&saveData[2].upper_limit, (&rom485[j]), 8);        //上下限3
 		}
 
-		j = 122;
+		j = 124;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[3].rangeIndex != 3) {
@@ -6877,7 +6840,7 @@ void read485rom(uint8_t func) {
 		} else {
 			memcpy(&saveData[3].lower_limit, (&rom485[j]), 8);        //上下限1
 		}
-		j = 126;
+		j = 128;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[3].rangeIndex != 3) {
@@ -6886,7 +6849,7 @@ void read485rom(uint8_t func) {
 			memcpy(&saveData[3].upper_limit, (&rom485[j]), 8);        //上下限1
 		}
 
-		j = 142;
+		j = 144;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[4].rangeIndex != 3) {
@@ -6894,7 +6857,7 @@ void read485rom(uint8_t func) {
 		} else {
 			memcpy(&saveData[4].lower_limit, (&rom485[j]), 8);        //上下限2
 		}
-		j = 146;
+		j = 148;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[4].rangeIndex != 3) {
@@ -6902,7 +6865,7 @@ void read485rom(uint8_t func) {
 		} else {
 			memcpy(&saveData[4].upper_limit, (&rom485[j]), 8);        //上下限2
 		}
-		j = 162;
+		j = 164;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[5].rangeIndex != 3) {
@@ -6910,7 +6873,7 @@ void read485rom(uint8_t func) {
 		} else {
 			memcpy(&saveData[5].lower_limit, (&rom485[j]), 8);        //上下限3
 		}
-		j = 166;
+		j = 168;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[5].rangeIndex != 3) {
@@ -7106,6 +7069,76 @@ void setBluetooth(void) {
 	uint8_t getBluetoothMAC[10] = { 'A', 'T', '+', 'A', 'D', 'D', 'R', '?',
 			'\r', '\n' };
 	HAL_UART_Transmit(&huart1, getBluetoothMAC, 10, SendTime);
+}
+void connectBluetooth(void) {
+	/* 设置蓝牙 */
+	while (1) {
+		if (bluetoothFlag == 1) {
+			if (BLUETOOTH_RX_BUF[0] == 'O' && BLUETOOTH_RX_BUF[1] == 'K'
+					&& BLUETOOTH_RX_BUF[2] == '+' && BLUETOOTH_RX_BUF[3] == 'L'
+					&& BLUETOOTH_RX_BUF[4] == 'A' && BLUETOOTH_RX_BUF[5] == 'D'
+					&& BLUETOOTH_RX_BUF[6] == 'D'
+					&& BLUETOOTH_RX_BUF[7] == ':') {
+				uint8_t i = 0;
+
+				/* 设置蓝牙NAME */
+				//蓝牙界面文本
+				//EE B1 10 00 0E 00 03 30 30 31 37 45 41 30 39 32 33 41 45 FF FC FF FF
+				uint8_t temp[23] = { 0xEE, 0xB1, 0x10, 0x00, 0x0E, 0x00, 0x03,
+						0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+						0x00, 0x00, 0x00, 0xFF, 0xFC, 0xFF, 0xFF };
+				//蓝牙界面二维码
+				//EE B1 10 00 0E 00 01 30 30 31 37 45 41 30 39 32 33 41 45 FF FC FF FF
+				uint8_t setBluetoothName[19] = { 'A', 'T', '+', 'N', 'A', 'M',
+						'E', 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+						0x00, 0x00, 0x0D, 0x0A };
+				for (i = 0; i < 12; i++) {
+					setBluetoothName[i + 7] = BLUETOOTH_RX_BUF[i + 10];
+					temp[i + 7] = BLUETOOTH_RX_BUF[i + 8];
+				}
+				HAL_UART_Transmit(&huart1, setBluetoothName, 19, SendTime);
+				//设置蓝牙界面文本
+				HAL_UART_Transmit(&huart2, temp, 23, SendTime);
+				//设置蓝牙界面二维码
+				temp[6] = 0x01;
+				HAL_UART_Transmit(&huart2, temp, 23, SendTime);
+				bluetoothFlag = 2;
+				memset(BLUETOOTH_RX_BUF, 0xFF, sizeof(BLUETOOTH_RX_BUF));
+				if (HAL_UART_Receive_DMA(&huart1, (uint8_t*) BLUETOOTH_RX_BUF,
+				CMD_MAX_SIZE) != HAL_OK) {
+					Error_Handler();
+				}
+				/* 开启串口空闲中断 */
+				__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+				break;
+			} else {
+				memset(BLUETOOTH_RX_BUF, 0xFF, sizeof(BLUETOOTH_RX_BUF));
+				HAL_UART_Receive_DMA(&huart1, (uint8_t*) BLUETOOTH_RX_BUF,
+				CMD_MAX_SIZE);
+				/* 开启串口空闲中断 */
+				__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+				setBluetooth();
+				HAL_Delay(1000);
+				bluetoothFlag = 0;
+			}
+		} else {
+			//currentTime - 等待蓝牙芯片响应时间
+			if (currentTime > 20) {
+				bluetoothFlag = 0;
+				memset(BLUETOOTH_RX_BUF, 0xFF, sizeof(BLUETOOTH_RX_BUF));
+				if (HAL_UART_Receive_DMA(&huart1, (uint8_t*) BLUETOOTH_RX_BUF,
+				CMD_MAX_SIZE) != HAL_OK) {
+					//TODO加入蓝牙芯片后开启
+					//Error_Handler();
+				}
+				/* 开启串口空闲中断 */
+				__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+				break;
+			}
+			setBluetooth();
+			HAL_Delay(1000);
+		}
+	}/* End 设置蓝牙 */
 }
 
 void bsp_Delay_Nus(uint16_t time) {
