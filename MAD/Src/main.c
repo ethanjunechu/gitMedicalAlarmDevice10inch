@@ -6473,8 +6473,11 @@ void set485rom(uint8_t func) {
 		}
 		rom485[2] = (bautrate & 0xff00) >> 8; //波特率
 		rom485[3] = bautrate & 0xff;
-		rom485[14] = 0; //音量
-		rom485[15] = saveData[0].volume; //音量
+		rom485[12] = 0; //音量
+		if(saveData[0].volume == 0){
+			rom485[13] = saveData[0].volume;
+		}
+		else rom485[13] = (saveData[0].volume - 50)/5; //音量
 		rom485[20] = 0;  //出厂字节1
 		rom485[21] = 0;
 
@@ -6804,7 +6807,11 @@ void read485rom(uint8_t func) {
 			saveData[0].baudrateIndex = 4;
 			break;
 		}
-		saveData[0].volume = rom485[15]; //音量
+		if(rom485[13] == 0){
+			saveData[0].volume = 0;
+		}
+		else
+			saveData[0].volume = rom485[13] * 5 + 50; //音量
 
 		saveData[0].nameIndex = rom485[25];
 		saveData[1].nameIndex = rom485[45];
