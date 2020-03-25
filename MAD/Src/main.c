@@ -717,6 +717,24 @@ void eepromReadSetting(void) {
 	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 	HAL_NVIC_EnableIRQ(TIM2_IRQn);
 	HAL_NVIC_EnableIRQ(TIM4_IRQn);
+	if (saveData[0].nameIndex > TOTALNUM) {
+		saveData[0].nameIndex = 21;
+	}
+	if (saveData[1].nameIndex > TOTALNUM) {
+		saveData[1].nameIndex = 21;
+	}
+	if (saveData[2].nameIndex > TOTALNUM) {
+		saveData[2].nameIndex = 21;
+	}
+	if (saveData[3].nameIndex > TOTALNUM) {
+		saveData[3].nameIndex = 21;
+	}
+	if (saveData[4].nameIndex > TOTALNUM) {
+		saveData[4].nameIndex = 21;
+	}
+	if (saveData[5].nameIndex > TOTALNUM) {
+		saveData[5].nameIndex = 21;
+	}
 }/* End eepromReadSetting() */
 
 /**
@@ -726,6 +744,24 @@ void eepromReadSetting(void) {
  * @历史版本 : V0.0.1 - Ethan - 2018/01/03
  */
 void eepromWriteSetting(void) {
+	if (saveData[0].nameIndex > TOTALNUM) {
+		saveData[0].nameIndex = 21;
+	}
+	if (saveData[1].nameIndex > TOTALNUM) {
+		saveData[1].nameIndex = 21;
+	}
+	if (saveData[2].nameIndex > TOTALNUM) {
+		saveData[2].nameIndex = 21;
+	}
+	if (saveData[3].nameIndex > TOTALNUM) {
+		saveData[3].nameIndex = 21;
+	}
+	if (saveData[4].nameIndex > TOTALNUM) {
+		saveData[4].nameIndex = 21;
+	}
+	if (saveData[5].nameIndex > TOTALNUM) {
+		saveData[5].nameIndex = 21;
+	}
 	HAL_NVIC_DisableIRQ(USART1_IRQn);
 	HAL_NVIC_DisableIRQ(USART2_IRQn);
 	HAL_NVIC_DisableIRQ(USART3_IRQn);
@@ -775,6 +811,24 @@ void loadMainPage(void) {
 	tempColor[10] = 0xFF;
 	tempColor[11] = 0xFF;
 	alarm_off();
+	if (saveData[0].nameIndex > TOTALNUM) {
+		saveData[0].nameIndex = 21;
+	}
+	if (saveData[1].nameIndex > TOTALNUM) {
+		saveData[1].nameIndex = 21;
+	}
+	if (saveData[2].nameIndex > TOTALNUM) {
+		saveData[2].nameIndex = 21;
+	}
+	if (saveData[3].nameIndex > TOTALNUM) {
+		saveData[3].nameIndex = 21;
+	}
+	if (saveData[4].nameIndex > TOTALNUM) {
+		saveData[4].nameIndex = 21;
+	}
+	if (saveData[5].nameIndex > TOTALNUM) {
+		saveData[5].nameIndex = 21;
+	}
 	//跳转主画面1-1
 	if (saveData[0].nameIndex != 21 && saveData[1].nameIndex == 21
 			&& saveData[2].nameIndex == 21 && saveData[3].nameIndex == 21
@@ -3877,7 +3931,7 @@ void updateUI(void) {
 	if (timeStamp == SELFTESTTIME || testFlag == 1) {
 		selfTest();
 	}
-	set485rom(1);
+	set485rom(0);
 }
 
 /**
@@ -6419,7 +6473,8 @@ void set485rom(uint8_t func) {
 		}
 		rom485[2] = (bautrate & 0xff00) >> 8; //波特率
 		rom485[3] = bautrate & 0xff;
-
+		rom485[14] = 0; //音量
+		rom485[15] = saveData[0].volume; //音量
 		rom485[20] = 0;  //出厂字节1
 		rom485[21] = 0;
 
@@ -6714,13 +6769,13 @@ void set485rom(uint8_t func) {
 	change_float_big_485rom(72);
 
 	memcpy((&rom485[132]), &float_ADCValue[3], 4);
-	change_float_big_485rom(130);
+	change_float_big_485rom(132);
 
 	memcpy((&rom485[152]), &float_ADCValue[4], 4);
-	change_float_big_485rom(150);
+	change_float_big_485rom(152);
 
 	memcpy((&rom485[172]), &float_ADCValue[5], 4);
-	change_float_big_485rom(170);
+	change_float_big_485rom(172);
 }
 
 void read485rom(uint8_t func) {
@@ -6749,6 +6804,7 @@ void read485rom(uint8_t func) {
 			saveData[0].baudrateIndex = 4;
 			break;
 		}
+		saveData[0].volume = rom485[15]; //音量
 
 		saveData[0].nameIndex = rom485[25];
 		saveData[1].nameIndex = rom485[45];
@@ -6779,7 +6835,7 @@ void read485rom(uint8_t func) {
 			saveData[4].nameIndex = 21;
 		}
 		if (saveData[5].nameIndex > TOTALNUM) {
-			saveData[6].nameIndex = 21;
+			saveData[5].nameIndex = 21;
 		}
 
 		j = 24;
