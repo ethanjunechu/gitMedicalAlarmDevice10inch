@@ -101,6 +101,8 @@ uint8_t rom485[256];
 uint8_t RS232_recvEndFlag = 0;
 uint8_t RS232_recvLength = 0;
 uint16_t SendTime = 0xFFFF;
+/* 蓝牙设置超时判断 0 - 没有设置 ｜ >1 - 设置中 ｜ > xxxx超时复位 */
+uint16_t bluetoothSetTime = 0;
 /* UI 相关参数 */
 /* 发送AD值和超压欠压状态 */
 // EE B1 12 00 01
@@ -3931,7 +3933,9 @@ void updateUI(void) {
 	if (timeStamp == SELFTESTTIME || testFlag == 1) {
 		selfTest();
 	}
-	set485rom(0);
+	if (bluetoothSetTime == 0) {
+		set485rom(0);
+	}
 }
 
 /**
@@ -5995,7 +5999,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 					&& (BLUETOOTH_RX_BUF[1] == 0x10)     //写入命令
 					&& (BLUETOOTH_RX_BUF[BLUETOOTH_RX_BUF[6] + 7] == buffer[6])
 					&& (BLUETOOTH_RX_BUF[BLUETOOTH_RX_BUF[6] + 8] == buffer[7])) { // 成功后组合数据 计算 CRC 并发送。
-
+				bluetoothSetTime = 1;
 				record_add = BLUETOOTH_RX_BUF[2] << 8 | BLUETOOTH_RX_BUF[3]; //组合为复合地址
 				if (record_add > 100)
 					record_add = 100;
@@ -6005,7 +6009,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				if (record_num > 200)
 					record_num = 200;
 				//复制设置到rom485
-				memcpy(&rom485[record_add * 2], (&BLUETOOTH_RX_BUF[7]),
+				memcpy(&rom485[(record_add - 1) * 2], (&BLUETOOTH_RX_BUF[7]),
 						record_num); //加一大段数据
 
 				//清空
@@ -6121,6 +6125,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 					read485rom(0);
 					eepromWriteSetting();
 					bluetoothRefreshFlag = 1;
+					bluetoothSetTime = 0;
 				}
 				//清空
 				memset(send_mydata, 0, sizeof(send_mydata));
@@ -6137,6 +6142,7 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 				send_mydata[7] = crc & 0xff;
 
 				HAL_UART_Transmit(&huart1, send_mydata, 8, SendTime);
+				HAL_Delay(1);
 			}/* 按钮命令结尾 */
 			memset(BLUETOOTH_RX_BUF, 0xFF, sizeof(BLUETOOTH_RX_BUF));
 			if (HAL_UART_Receive_DMA(&huart1, (uint8_t*) BLUETOOTH_RX_BUF,
@@ -6167,6 +6173,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *tim_baseHandle) {
 	}
 	if (tim_baseHandle->Instance == TIM2) {
 		currentTime++;
+		/* 已进入蓝牙设置，更新超时时间 */
+		if (bluetoothSetTime > 0) {
+			bluetoothSetTime++;
+		}
+		/* 蓝牙设置超时 */
+		if (bluetoothSetTime > 50) {
+			bluetoothSetTime = 0;
+		}
 		if (currentTime > 999) {
 			currentTime = 0;
 		}
@@ -6474,10 +6488,10 @@ void set485rom(uint8_t func) {
 		rom485[2] = (bautrate & 0xff00) >> 8; //波特率
 		rom485[3] = bautrate & 0xff;
 		rom485[12] = 0; //音量
-		if(saveData[0].volume == 0){
+		if (saveData[0].volume == 0) {
 			rom485[13] = saveData[0].volume;
-		}
-		else rom485[13] = (saveData[0].volume - 50)/5; //音量
+		} else
+			rom485[13] = (saveData[0].volume - 50) / 5; //音量
 		rom485[20] = 0;  //出厂字节1
 		rom485[21] = 0;
 
@@ -6785,10 +6799,10 @@ void read485rom(uint8_t func) {
 	uint16_t j;
 	if (func == 0) {
 
-		unsigned int bautrate = 0;
+		unsigned long bautrate = 0;
 		saveData[0].modbusAddr = rom485[1]; //地址
 
-		bautrate = (rom485[2] << 8) & rom485[3];
+		bautrate = rom485[2] * 16 * 16 + rom485[3];
 
 		switch (bautrate) {
 		case 2400:
@@ -6807,25 +6821,24 @@ void read485rom(uint8_t func) {
 			saveData[0].baudrateIndex = 4;
 			break;
 		}
-		if(rom485[13] == 0){
+		if (rom485[13] == 0) {
 			saveData[0].volume = 0;
-		}
-		else
+		} else
 			saveData[0].volume = rom485[13] * 5 + 50; //音量
 
-		saveData[0].nameIndex = rom485[25];
-		saveData[1].nameIndex = rom485[45];
-		saveData[2].nameIndex = rom485[65];
-		saveData[0].rangeIndex = rom485[41];
-		saveData[1].rangeIndex = rom485[61];
-		saveData[2].rangeIndex = rom485[81];
+		saveData[0].nameIndex = rom485[23];
+		saveData[1].nameIndex = rom485[43];
+		saveData[2].nameIndex = rom485[63];
+		saveData[0].rangeIndex = rom485[38];
+		saveData[1].rangeIndex = rom485[58];
+		saveData[2].rangeIndex = rom485[78];
 
-		saveData[3].nameIndex = rom485[125];
-		saveData[4].nameIndex = rom485[145];
-		saveData[5].nameIndex = rom485[165];
-		saveData[3].rangeIndex = rom485[141];
-		saveData[4].rangeIndex = rom485[161];
-		saveData[5].rangeIndex = rom485[181];
+		saveData[3].nameIndex = rom485[123];
+		saveData[4].nameIndex = rom485[143];
+		saveData[5].nameIndex = rom485[163];
+		saveData[3].rangeIndex = rom485[138];
+		saveData[4].rangeIndex = rom485[158];
+		saveData[5].rangeIndex = rom485[178];
 		if (saveData[0].nameIndex > TOTALNUM) {
 			saveData[0].nameIndex = 21;
 		}
