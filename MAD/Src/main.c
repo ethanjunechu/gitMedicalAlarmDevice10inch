@@ -63,15 +63,15 @@
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 /* printf重定向 */
-#ifdef __GNUC__
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
-PUTCHAR_PROTOTYPE {
-	HAL_UART_Transmit(&huart3, (uint8_t*) &ch, 1, 0x000F);
-	return ch;
-}
+//#ifdef __GNUC__
+//#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+//#else
+//#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+//#endif /* __GNUC__ */
+//PUTCHAR_PROTOTYPE {
+//	HAL_UART_Transmit(&huart3, (uint8_t*) &ch, 1, 0x000F);
+//	return ch;
+//}
 /* 气体总数 判断名称是否超量程 */
 #define TOTALNUM 27
 #define CMD_MAX_SIZE 60
@@ -608,8 +608,10 @@ void application(void) {
 	/* 正常工作 */
 	while (1) {
 		if (RS232_recvEndFlag == 1) {
-			ProcessUIMessage((PCTRL_MSG) RS232_RX_BUF, RS232_recvLength); //指令处理
-
+			if (RS232_RX_BUF[0] == 0xEE) {
+				ProcessUIMessage((PCTRL_MSG) RS232_RX_BUF, RS232_recvLength); //指令处理
+			}
+			memset(RS232_RX_BUF, 0, sizeof(RS232_recvLength));
 			RS232_recvLength = 0;
 			RS232_recvEndFlag = 0;
 			HAL_UART_Receive_DMA(&huart2, (uint8_t*) RS232_RX_BUF,
@@ -5826,8 +5828,8 @@ void UART_RxIDLECallback(UART_HandleTypeDef *uartHandle) {
 		__HAL_UART_CLEAR_IDLEFLAG(&huart2);
 		HAL_UART_DMAStop(&huart2);
 
-		temp = huart2.Instance->SR;
-		temp = huart2.Instance->DR;
+//		temp = huart2.Instance->SR;
+//		temp = huart2.Instance->DR;
 		temp = hdma_usart2_rx.Instance->CNDTR;
 		RS232_recvLength = CMD_MAX_SIZE - temp;
 		RS232_recvEndFlag = 1;
@@ -6535,7 +6537,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[0].lower_limit, 8);        //上下限1
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 28;
 		if (saveData[0].rangeIndex != 3) {
@@ -6544,7 +6546,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[0].upper_limit, 8);        //上下限1
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 44;
 		if (saveData[1].rangeIndex != 3) {
@@ -6553,7 +6555,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[1].lower_limit, 8);        //上下限2
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 48;
 		if (saveData[1].rangeIndex != 3) {
@@ -6562,7 +6564,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[1].upper_limit, 8);        //上下限2
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 64;
 		if (saveData[2].rangeIndex != 3) {
@@ -6571,7 +6573,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[2].lower_limit, 8);        //上下限3
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 68;
 		if (saveData[2].rangeIndex != 3) {
@@ -6580,7 +6582,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[2].upper_limit, 8);        //上下限3
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 124;
 		if (saveData[3].rangeIndex != 3) {
@@ -6589,7 +6591,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[3].lower_limit, 8);        //上下限1
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 128;
 		if (saveData[3].rangeIndex != 3) {
@@ -6598,7 +6600,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[3].upper_limit, 8);        //上下限1
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 144;
 		if (saveData[4].rangeIndex != 3) {
@@ -6607,7 +6609,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[4].lower_limit, 8);        //上下限2
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 148;
 		if (saveData[4].rangeIndex != 3) {
@@ -6616,7 +6618,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[4].upper_limit, 8);        //上下限2
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 164;
 		if (saveData[5].rangeIndex != 3) {
@@ -6625,7 +6627,7 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[5].lower_limit, 8);        //上下限3
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 
 		j = 168;
 		if (saveData[5].rangeIndex != 3) {
@@ -6634,14 +6636,14 @@ void set485rom(uint8_t func) {
 			memcpy((&rom485[j]), &saveData[5].upper_limit, 8);        //上下限3
 		}
 		change_float_big_485rom(j);
-		change_float_big_485rom(j + 4);
+//		change_float_big_485rom(j + 4);
 		/* 测量范围索引 */
-		rom485[38] = saveData[0].rangeIndex;
-		rom485[58] = saveData[1].rangeIndex;
-		rom485[78] = saveData[2].rangeIndex;
-		rom485[138] = saveData[3].rangeIndex;
-		rom485[158] = saveData[4].rangeIndex;
-		rom485[178] = saveData[5].rangeIndex;
+		rom485[39] = saveData[0].rangeIndex;
+		rom485[59] = saveData[1].rangeIndex;
+		rom485[79] = saveData[2].rangeIndex;
+		rom485[139] = saveData[3].rangeIndex;
+		rom485[159] = saveData[4].rangeIndex;
+		rom485[179] = saveData[5].rangeIndex;
 	}
 
 	rom485[4] = 0;		//报警1
@@ -6820,25 +6822,31 @@ void read485rom(uint8_t func) {
 		case 38400:
 			saveData[0].baudrateIndex = 4;
 			break;
+		default:
+			break;
 		}
 		if (rom485[13] == 0) {
 			saveData[0].volume = 0;
-		} else
-			saveData[0].volume = rom485[13] * 5 + 50; //音量
+		} else {
+			saveData[0].volume = rom485[13] * 5 + 50;
+		}
 
 		saveData[0].nameIndex = rom485[23];
 		saveData[1].nameIndex = rom485[43];
 		saveData[2].nameIndex = rom485[63];
-		saveData[0].rangeIndex = rom485[38];
-		saveData[1].rangeIndex = rom485[58];
-		saveData[2].rangeIndex = rom485[78];
+
+		saveData[0].rangeIndex = rom485[39];
+		saveData[1].rangeIndex = rom485[59];
+		saveData[2].rangeIndex = rom485[79];
 
 		saveData[3].nameIndex = rom485[123];
 		saveData[4].nameIndex = rom485[143];
 		saveData[5].nameIndex = rom485[163];
-		saveData[3].rangeIndex = rom485[138];
-		saveData[4].rangeIndex = rom485[158];
-		saveData[5].rangeIndex = rom485[178];
+
+		saveData[3].rangeIndex = rom485[139];
+		saveData[4].rangeIndex = rom485[159];
+		saveData[5].rangeIndex = rom485[179];
+
 		if (saveData[0].nameIndex > TOTALNUM) {
 			saveData[0].nameIndex = 21;
 		}
@@ -6862,101 +6870,79 @@ void read485rom(uint8_t func) {
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[0].rangeIndex != 3) {
-			memcpy(&saveData[0].upper_limit, (&rom485[j]), 8);        //上下限1
+			memcpy(&saveData[0].upper_limit, (&rom485[j]), 4);        //上下限1
+			memcpy(&saveData[0].lower_limit, (&rom485[j + 4]), 4);
 		} else {
-			memcpy(&saveData[0].lower_limit, (&rom485[j]), 8);        //上下限1
+			memcpy(&saveData[0].upper_limit, (&rom485[j + 4]), 4);    //上下限1
+			memcpy(&saveData[0].lower_limit, (&rom485[j]), 4);
 		}
-		j = 28;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
-		if (saveData[0].rangeIndex != 3) {
-			memcpy(&saveData[0].lower_limit, (&rom485[j]), 8);        //上下限1
-		} else {
-			memcpy(&saveData[0].upper_limit, (&rom485[j]), 8);        //上下限1
-		}
 
 		j = 44;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[1].rangeIndex != 3) {
-			memcpy(&saveData[1].upper_limit, (&rom485[j]), 8);        //上下限2
+			memcpy(&saveData[1].upper_limit, (&rom485[j]), 4);        //上下限2
+			memcpy(&saveData[1].lower_limit, (&rom485[j + 4]), 4);
 		} else {
-			memcpy(&saveData[1].lower_limit, (&rom485[j]), 8);        //上下限2
+			memcpy(&saveData[1].upper_limit, (&rom485[j + 4]), 4);    //上下限2
+			memcpy(&saveData[1].lower_limit, (&rom485[j]), 4);
 		}
-		j = 48;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
-		if (saveData[1].rangeIndex != 3) {
-			memcpy(&saveData[1].lower_limit, (&rom485[j]), 8);        //上下限2
-		} else {
-			memcpy(&saveData[1].upper_limit, (&rom485[j]), 8);        //上下限2
-		}
+
 		j = 64;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[2].rangeIndex != 3) {
-			memcpy(&saveData[2].upper_limit, (&rom485[j]), 8);        //上下限3
+			memcpy(&saveData[2].upper_limit, (&rom485[j]), 4);        //上下限3
+			memcpy(&saveData[2].lower_limit, (&rom485[j + 4]), 4);
 		} else {
-			memcpy(&saveData[2].lower_limit, (&rom485[j]), 8);        //上下限3
+			memcpy(&saveData[2].lower_limit, (&rom485[j]), 4);        //上下限3
+			memcpy(&saveData[2].upper_limit, (&rom485[j + 4]), 4);
 		}
-		j = 68;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
-		if (saveData[2].rangeIndex != 3) {
-			memcpy(&saveData[2].lower_limit, (&rom485[j]), 8);        //上下限3
-		} else {
-			memcpy(&saveData[2].upper_limit, (&rom485[j]), 8);        //上下限3
-		}
 
 		j = 124;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[3].rangeIndex != 3) {
-			memcpy(&saveData[3].upper_limit, (&rom485[j]), 8);        //上下限1
+			memcpy(&saveData[3].upper_limit, (&rom485[j]), 4);        //上下限4
+			memcpy(&saveData[3].lower_limit, (&rom485[j + 4]), 4);
 		} else {
-			memcpy(&saveData[3].lower_limit, (&rom485[j]), 8);        //上下限1
+			memcpy(&saveData[3].lower_limit, (&rom485[j]), 4);        //上下限4
+			memcpy(&saveData[3].upper_limit, (&rom485[j + 4]), 4);
 		}
-		j = 128;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
-		if (saveData[3].rangeIndex != 3) {
-			memcpy(&saveData[3].lower_limit, (&rom485[j]), 8);        //上下限1
-		} else {
-			memcpy(&saveData[3].upper_limit, (&rom485[j]), 8);        //上下限1
-		}
 
 		j = 144;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[4].rangeIndex != 3) {
-			memcpy(&saveData[4].upper_limit, (&rom485[j]), 8);        //上下限2
+			memcpy(&saveData[4].upper_limit, (&rom485[j]), 4);        //上下限5
+			memcpy(&saveData[4].lower_limit, (&rom485[j + 4]), 4);
 		} else {
-			memcpy(&saveData[4].lower_limit, (&rom485[j]), 8);        //上下限2
+			memcpy(&saveData[4].lower_limit, (&rom485[j]), 4);        //上下限5
+			memcpy(&saveData[4].upper_limit, (&rom485[j + 4]), 4);
 		}
-		j = 148;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
-		if (saveData[4].rangeIndex != 3) {
-			memcpy(&saveData[4].lower_limit, (&rom485[j]), 8);        //上下限2
-		} else {
-			memcpy(&saveData[4].upper_limit, (&rom485[j]), 8);        //上下限2
-		}
+
 		j = 164;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
 		if (saveData[5].rangeIndex != 3) {
-			memcpy(&saveData[5].upper_limit, (&rom485[j]), 8);        //上下限3
+			memcpy(&saveData[5].upper_limit, (&rom485[j]), 4);        //上下限6
+			memcpy(&saveData[5].lower_limit, (&rom485[j + 4]), 4);
 		} else {
-			memcpy(&saveData[5].lower_limit, (&rom485[j]), 8);        //上下限3
+			memcpy(&saveData[5].lower_limit, (&rom485[j]), 4);        //上下限6
+			memcpy(&saveData[5].upper_limit, (&rom485[j + 4]), 4);
 		}
-		j = 168;
 		change_float_big_485rom(j);
 		change_float_big_485rom(j + 4);
-		if (saveData[5].rangeIndex != 3) {
-			memcpy(&saveData[5].lower_limit, (&rom485[j]), 8);        //上下限3
-		} else {
-			memcpy(&saveData[5].upper_limit, (&rom485[j]), 8);        //上下限3
-		}
 	}
 }
 
