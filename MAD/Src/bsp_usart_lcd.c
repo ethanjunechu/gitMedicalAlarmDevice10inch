@@ -1041,9 +1041,8 @@ void NotifyText(uint16_t screen_id, uint16_t control_id, uint8_t *str) {
 	/* 修改上限 */
 	if (screen_id == PAGE_SET1 && control_id == 4) {
 		saveData[currentCHN].upper_limit = StrToFloat(str);
-		saveData[currentCHN].upper_limit =
-				((float) ((int) ((saveData[currentCHN].upper_limit + 0.005)
-						* 100))) / 100;
+		saveData[currentCHN].upper_limit = saveData[currentCHN].upper_limit
+				+ 0.005;
 		/* 上下限设置反了，自动对调 */
 		if (saveData[currentCHN].rangeIndex == 3) {
 			if (saveData[currentCHN].upper_limit
@@ -1125,9 +1124,8 @@ void NotifyText(uint16_t screen_id, uint16_t control_id, uint8_t *str) {
 	/* 修改下限 */
 	if (screen_id == PAGE_SET1 && control_id == 5) {
 		saveData[currentCHN].lower_limit = StrToFloat(str);
-		saveData[currentCHN].lower_limit =
-						((float) ((int) ((saveData[currentCHN].lower_limit + 0.005)
-								* 100))) / 100;
+		saveData[currentCHN].lower_limit = saveData[currentCHN].lower_limit
+				+ 0.005;
 		if (saveData[currentCHN].upper_limit
 				< saveData[currentCHN].lower_limit) {
 			templimit = saveData[currentCHN].upper_limit;
