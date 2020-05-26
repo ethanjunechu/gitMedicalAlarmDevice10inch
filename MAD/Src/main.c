@@ -195,9 +195,9 @@ uint8_t licFailedCMD[19] = { 0xEE, 0xB1, 0x10, 0x00, 0x01, 0x00, 0x15, 0xD0,
 uint8_t licFlag = 0;
 uint8_t licFailedFlag = 0;
 
-extern uint8_t chnName[23][14];
-extern uint8_t engName[23][13];
-extern uint8_t colorName[23][1];
+extern uint8_t chnName[27][14];
+extern uint8_t engName[27][23];
+extern uint8_t colorName[27][1];
 
 /* Led 控制 */
 /* 0 - 正常 | 1 - 欠压 | 2 - 超压 */
@@ -1864,9 +1864,11 @@ void loadMainPage(void) {
 							date_1302[3] * 10 + date_1302[2],
 							date_1302[1] * 10 + date_1302[0])) {
 		licFailedFlag = 0;
+		licPassedCMD[4] = mainpage;
 		HAL_UART_Transmit(&huart2, licPassedCMD, 11, SendTime);
 	} else {
 		licFailedFlag = 1;
+		licFailedCMD[4] = mainpage;
 		HAL_UART_Transmit(&huart2, licFailedCMD, 19, SendTime);
 	}
 	HAL_Delay(200);
@@ -2009,6 +2011,7 @@ void loadMainPage(void) {
 	lastPage = currentPage;
 	currentPage = mainpage;
 	bluetoothRefreshFlag = 0;
+	testFlag = 0;
 }/* End loadMainPage() */
 
 /**
@@ -2618,10 +2621,8 @@ void selfTest(void) {
 
 	HAL_Delay(700);
 
-	HAL_Delay(700);
 	timeStamp = 0;
 
-//	alarm_off();
 	//TODO 全局led 485rom检查
 	ledFlag[0] = rom485[37];
 	ledFlag[1] = rom485[57];
@@ -2632,7 +2633,7 @@ void selfTest(void) {
 
 	/* 加载主界面设置 */
 	loadMainPage();
-	testFlag = 0;
+//	testFlag = 0;
 	HAL_NVIC_EnableIRQ(USART1_IRQn);
 	HAL_NVIC_EnableIRQ(USART3_IRQn);
 }
@@ -6207,7 +6208,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *tim_baseHandle) {
 			getUIFlag = 1;
 		}
 		if (currentPage == PAGE_START && (currentTime - timeStamp) >= 220) {
-			uint8_t temp[9];
+//			uint8_t temp[9];
 //跳转主画面3
 //跳转至主屏幕
 //EE B1 00 00 01 FF FC FF FF
@@ -7121,7 +7122,7 @@ void checkLic(void) {
 		HAL_UART_Transmit(&huart2, licPassedCMD, 11, SendTime);
 	} else {
 		licFailedFlag = 1;
-		licPassedCMD[4] = currentPage;
+		licFailedCMD[4] = currentPage;
 		HAL_UART_Transmit(&huart2, licFailedCMD, 19, SendTime);
 	}
 }
